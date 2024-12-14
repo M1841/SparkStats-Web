@@ -4,9 +4,9 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `
+    <nav>[navbar]</nav>
+    <router-outlet />
+  `,
 })
-export class AppComponent {
-  title = 'sparkstats-web';
-}
+export class AppComponent {}

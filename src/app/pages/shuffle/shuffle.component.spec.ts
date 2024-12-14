@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppComponent } from './app.component';
+import { ShuffleComponent } from './shuffle.component';
 
-describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
+describe('ShuffleComponent', () => {
+  let component: ShuffleComponent;
+  let fixture: ComponentFixture<ShuffleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [ShuffleComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppComponent);
+    fixture = TestBed.createComponent(ShuffleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
