@@ -4,6 +4,7 @@ import { UserProfileComponent } from '@components/home/user-profile/user-profile
 import { FeaturesComponent } from '@components/home/features/features.component';
 import { CurrentlyPlayingComponent } from '@components/home/currently-playing/currently-playing.component';
 import { HistoryComponent } from '@components/home/history/history.component';
+import { LoginButtonComponent } from '@components/home/login-button/login-button.component';
 
 @Component({
   selector: 'app-home',
@@ -12,9 +13,11 @@ import { HistoryComponent } from '@components/home/history/history.component';
     FeaturesComponent,
     CurrentlyPlayingComponent,
     HistoryComponent,
+    LoginButtonComponent,
   ],
   template: `
     <main>
+      <app-login-button />
       <app-user-profile />
       <app-features />
       <app-currently-playing />
