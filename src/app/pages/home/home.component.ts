@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { UserProfileComponent } from '@components/home/user-profile/user-profile.component';
 import { FeaturesComponent } from '@components/home/features/features.component';
 import { CurrentlyPlayingComponent } from '@components/home/currently-playing/currently-playing.component';
 import { HistoryComponent } from '@components/home/history/history.component';
 import { LoginButtonComponent } from '@components/home/login-button/login-button.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-home',
@@ -17,12 +18,23 @@ import { LoginButtonComponent } from '@components/home/login-button/login-button
   ],
   template: `
     <main>
-      <app-login-button />
+      @if(isLoggedIn){
       <app-user-profile />
       <app-features />
       <app-currently-playing />
       <app-history />
+      } @else {
+      <app-login-button />
+      }
     </main>
   `,
 })
-export class HomeComponent {}
+export class HomeComponent implements OnInit {
+  constructor(private cookies: CookieService) {}
+
+  isLoggedIn = false;
+
+  ngOnInit() {
+    this.isLoggedIn = this.cookies.get('access_token') ? true : false;
+  }
+}

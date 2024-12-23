@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { RangeSelectComponent } from '@components/ui/range-select/range-select.component';
+import { RangeSelectComponent } from '@components/shared/range-select/range-select.component';
 import { ArtistsComponent } from '@components/top-artists/artists/artists.component';
 
 @Component({

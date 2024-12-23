@@ -8,10 +8,7 @@ import { CookieService } from 'ngx-cookie-service';
   template: '',
 })
 export class AuthCallbackComponent implements OnInit {
-  constructor(
-    private route: ActivatedRoute,
-    private cookieService: CookieService
-  ) {}
+  constructor(private route: ActivatedRoute, private cookies: CookieService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -19,16 +16,16 @@ export class AuthCallbackComponent implements OnInit {
       const refreshToken = params['refresh_token'];
 
       if (accessToken && refreshToken) {
-        this.cookieService.set('access_token', accessToken, {
+        this.cookies.set('access_token', accessToken, {
           secure: true,
           sameSite: 'Strict',
         });
-        this.cookieService.set('refresh_token', refreshToken, {
+        this.cookies.set('refresh_token', refreshToken, {
           secure: true,
           sameSite: 'Strict',
         });
       }
-      window.history.replaceState({}, '', '/');
+      window.location.replace('/');
     });
   }
 }
