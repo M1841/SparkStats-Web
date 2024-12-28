@@ -1,0 +1,8 @@
+#!/bin/bash
+
+case $1 in
+*)
+  pnpm build
+  pnpm start
+  ;;
+esac

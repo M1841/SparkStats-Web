@@ -3,14 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
 import { environment } from '@environments/environment';
-import { TrackComponent } from '@components/shared/track/track.component';
+import { ItemComponent } from '@components/shared/item/item.component';
 
 @Component({
   selector: 'app-currently-playing',
-  imports: [TrackComponent],
+  imports: [ItemComponent],
   template: `<div>
-    Currently Playing:
-    <app-track [track]="track!" />
+    Currently Playing: @if(track !== null) {
+    <app-item [item]="track" />} @else { No track is currently playing }
   </div>`,
 })
 export class CurrentlyPlayingComponent implements OnInit {
@@ -27,7 +27,7 @@ export class CurrentlyPlayingComponent implements OnInit {
         observe: 'response',
       })
       .subscribe((res) => {
-        if (res.status === 200) {
+        if (res.status === 200 || res.status === 204) {
           this.track = res.body;
         } else {
           this.cookies.deleteAll();

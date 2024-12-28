@@ -30,3 +30,7 @@ type PlaylistSimple = {
   trackCount: number;
   pictureUrl?: string;
 };
+
+type ItemSimple = TrackSimple | ArtistSimple | PlaylistSimple;
+
+type TimeRange = 'short-term' | 'medium-term' | 'long-term';

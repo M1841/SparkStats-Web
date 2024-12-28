@@ -3,15 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
 import { environment } from '@environments/environment';
-import { TrackComponent } from '@components/shared/track/track.component';
+import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
 
 @Component({
   selector: 'app-history',
-  imports: [TrackComponent],
+  imports: [ItemsListComponent],
   template: `<div>
-    History: @for (historyTrack of history; track $index) {
-    <app-track [track]="historyTrack" />
-    }
+    History:
+    <app-items-list [items]="history" />
   </div>`,
 })
 export class HistoryComponent implements OnInit {

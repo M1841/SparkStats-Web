@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
 
 import { RangeSelectComponent } from '@components/shared/range-select/range-select.component';
-import { TracksComponent } from '@components/top-tracks/tracks/tracks.component';
 
 @Component({
   selector: 'app-top-tracks',
-  imports: [RangeSelectComponent, TracksComponent],
+  imports: [RangeSelectComponent],
   template: `
     <main>
       <app-range-select />
-      <app-tracks />
     </main>
   `,
 })
