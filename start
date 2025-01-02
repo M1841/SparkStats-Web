@@ -1,8 +1,16 @@
 #!/bin/bash
 
 case $1 in
+# --docker | -d)
+#   docker build . -t sparkstats-web
+#   docker run -p 4200:4200 sparkstats-web
+#   ;;
+--watch | -w)
+  node src/scripts/set-env.js
+  pnpm start
+  ;;
 *)
   pnpm build
-  pnpm start
+  pnpm serve:ssr:sparkstats-web
   ;;
 esac

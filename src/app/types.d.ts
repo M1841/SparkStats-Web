@@ -34,3 +34,16 @@ type PlaylistSimple = {
 type ItemSimple = TrackSimple | ArtistSimple | PlaylistSimple;
 
 type TimeRange = 'short-term' | 'medium-term' | 'long-term';
+
+type Endpoint =
+  | 'artist/top'
+  | 'auth/login'
+  | 'auth/refresh'
+  | 'track/current'
+  | 'track/history'
+  | 'track/top'
+  | 'playlist'
+  | 'playlist/shuffle'
+  | ''
+  | 'user/profile'
+  | 'user/signout';

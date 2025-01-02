@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 
-import { environment } from '@environments/environment';
+import { ApiService } from '@services/api.service';
+import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-user-profile',
@@ -16,25 +15,18 @@ import { environment } from '@environments/environment';
   </div>`,
 })
 export class UserProfileComponent implements OnInit {
-  constructor(private cookies: CookieService, private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   profile: Profile | null = null;
 
   ngOnInit() {
-    this.http
-      .get<Profile>(`${environment.backendUrl}/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${this.cookies.get('access_token')}`,
-        },
-        observe: 'response',
-      })
-      .subscribe((res) => {
-        if (res.status === 200) {
-          this.profile = res.body;
-        } else {
-          this.cookies.deleteAll();
+    this.api
+      .get<Profile>(Endpoints.user.profile)
+      .subscribe(({ result, error }) => {
+        if (error !== null) {
           window.location.href = '/';
         }
+        this.profile = result;
       });
   }
 }

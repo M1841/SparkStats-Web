@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-
 import { environment } from '@environments/environment';
+
+import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-login-button',
   imports: [],
-  template: ` <a [href]="loginEndpoint">Log in with Spotify</a> `,
+  template: ` <a [href]="loginUrl">Log in with Spotify</a> `,
 })
 export class LoginButtonComponent {
-  loginEndpoint = `${environment.backendUrl}/auth/login`;
+  loginUrl = `${environment.backendUrl}/${Endpoints.auth.login}`;
 }

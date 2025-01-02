@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   imports: [],
   template: `<div>
     @for (feature of features; track $index) {
-    <a [href]="feature.url">{{ feature.name }}</a>
+      <a [href]="feature.url">{{ feature.name }}</a>
     }
   </div>`,
 })

@@ -14,6 +14,7 @@ Create a `.env` file with the url of you API
 
 ```bash
 BACKEND_URL=http://localhost:8080
+PORT=4200
 ```
 
 ## Running the program
@@ -22,4 +23,10 @@ BACKEND_URL=http://localhost:8080
 
 ```bash
 ./start
+```
+
+- same as above but with hot-reloading enabled
+
+```bash
+./start # or ./start --watch
 ```

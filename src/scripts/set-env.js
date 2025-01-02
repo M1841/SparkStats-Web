@@ -12,6 +12,7 @@ const envDevPath = resolve(envDir, "environment.development.ts");
 
 const envContent = `export const environment = {
   backendUrl: '${process.env.BACKEND_URL}',
+  port: '${process.env.PORT}',
 };
 `;
 

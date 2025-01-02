@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 
-import { environment } from '@environments/environment';
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
+import { ApiService } from '@services/api.service';
+import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-history',
@@ -14,25 +13,18 @@ import { ItemsListComponent } from '@components/shared/items-list/items-list.com
   </div>`,
 })
 export class HistoryComponent implements OnInit {
-  constructor(private cookies: CookieService, private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   history: TrackSimple[] = [];
 
   ngOnInit() {
-    this.http
-      .get<TrackSimple[]>(`${environment.backendUrl}/track/history`, {
-        headers: {
-          Authorization: `Bearer ${this.cookies.get('access_token')}`,
-        },
-        observe: 'response',
-      })
-      .subscribe((res) => {
-        if (res.status === 200 || res.body === null) {
-          this.history = res.body!;
-        } else {
-          this.cookies.deleteAll();
+    this.api
+      .get<TrackSimple[]>(Endpoints.track.history)
+      .subscribe(({ result, error }) => {
+        if (error !== null) {
           window.location.href = '/';
         }
+        this.history = result ?? [];
       });
   }
 }

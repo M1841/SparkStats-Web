@@ -8,7 +8,10 @@ import { CookieService } from 'ngx-cookie-service';
   template: '',
 })
 export class AuthCallbackComponent implements OnInit {
-  constructor(private route: ActivatedRoute, private cookies: CookieService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private cookies: CookieService,
+  ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -16,13 +19,14 @@ export class AuthCallbackComponent implements OnInit {
       const refreshToken = params['refresh_token'];
 
       if (accessToken && refreshToken) {
-        this.cookies.set('access_token', accessToken, {
-          secure: true,
-          sameSite: 'Strict',
-        });
-        this.cookies.set('refresh_token', refreshToken, {
-          secure: true,
-          sameSite: 'Strict',
+        [
+          ['access_token', accessToken],
+          ['refresh_token', refreshToken],
+        ].forEach(([key, value]) => {
+          this.cookies.set(key, value, {
+            secure: true,
+            sameSite: 'Strict',
+          });
         });
       }
       window.location.replace('/');

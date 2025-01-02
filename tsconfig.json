@@ -20,7 +20,9 @@
     "paths": {
       "@environments/*": ["./src/environments/*"],
       "@components/*": ["./src/app/components/*"],
-      "@pages/*": ["./src/app/pages/*"]
+      "@pages/*": ["./src/app/pages/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "angularCompilerOptions": {
