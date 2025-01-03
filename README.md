@@ -28,5 +28,5 @@ PORT=4200
 - same as above but with hot-reloading enabled
 
 ```bash
-./start # or ./start --watch
+./start -w # or ./start --watch
 ```
