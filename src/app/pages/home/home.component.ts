@@ -1,35 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 
 import { UserProfileComponent } from '@components/home/user-profile/user-profile.component';
-import { FeaturesComponent } from '@components/home/features/features.component';
 import { CurrentlyPlayingComponent } from '@components/home/currently-playing/currently-playing.component';
 import { HistoryComponent } from '@components/home/history/history.component';
 import { LoginButtonComponent } from '@components/home/login-button/login-button.component';
 import { ApiService } from '@services/api.service';
-import { LogoutButtonComponent } from '../../components/shared/logout-button/logout-button.component';
 
 @Component({
   selector: 'app-home',
   imports: [
     UserProfileComponent,
-    FeaturesComponent,
     CurrentlyPlayingComponent,
     HistoryComponent,
     LoginButtonComponent,
-    LogoutButtonComponent,
   ],
   template: `
-    <main>
-      @if (isAuthenticated) {
+    @if (isAuthenticated) {
+      <main class="px-8 py-4 flex flex-col gap-6">
         <app-user-profile />
-        <app-logout-button />
-        <app-features />
         <app-currently-playing />
         <app-history />
-      } @else {
+      </main>
+    } @else {
+      <main>
         <app-login-button />
-      }
-    </main>
+      </main>
+    }
   `,
 })
 export class HomeComponent implements OnInit {

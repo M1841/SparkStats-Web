@@ -6,7 +6,15 @@ import { Endpoints } from '@utils/constants';
 @Component({
   selector: 'app-top-tracks',
   imports: [TopItemsComponent],
-  template: ` <app-top-items [endpoint]="endpoint" /> `,
+  template: `
+    <app-top-items
+      [endpoint]="endpoint"
+      [sectionHeader]="{
+        iconSrc: 'svg/music-dim.svg',
+        text: 'Your Top Tracks',
+      }"
+    />
+  `,
 })
 export class TopTracksComponent {
   endpoint = Endpoints.track.top;

@@ -3,12 +3,17 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
+import { SectionHeaderComponent } from '../../components/shared/section-header/section-header.component';
 
 @Component({
   selector: 'app-shuffle',
-  imports: [ItemsListComponent],
+  imports: [ItemsListComponent, SectionHeaderComponent],
   template: `
-    <main>
+    <main class="px-8 py-4 flex flex-col gap-2">
+      <app-section-header
+        iconSrc="svg/music-list-dim.svg"
+        text="Playlist Shuffler"
+      />
       <app-items-list [items]="playlists" [(isLoading)]="isLoading" />
     </main>
   `,

@@ -1,16 +1,17 @@
 import { Component, OnInit, signal } from '@angular/core';
 
 import { ItemComponent } from '@components/shared/item/item.component';
+import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-currently-playing',
-  imports: [ItemComponent],
-  template: `<div>
-    Currently Playing:
+  imports: [ItemComponent, SectionHeaderComponent],
+  template: `<section class="flex flex-col gap-2">
+    <app-section-header iconSrc="svg/bars.svg" text="Currently Playing" />
     <app-item [item]="track" [(isLoading)]="isLoading" />
-  </div>`,
+  </section>`,
 })
 export class CurrentlyPlayingComponent implements OnInit {
   constructor(private api: ApiService) {}

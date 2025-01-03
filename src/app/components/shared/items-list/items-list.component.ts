@@ -6,21 +6,23 @@ import { ItemComponent } from '@components/shared/item/item.component';
   selector: 'app-items-list',
   imports: [ItemComponent],
   template: `
-    @for (item of items(); track $index) {
-      <app-item
-        [item]="item"
-        [index]="isIndexed() ? $index : null"
-        [(isLoading)]="isLoading"
-      >
-        @if (innerComponent !== null) {
-          {{ innerComponent() }}
-        }
-      </app-item>
-    }
+    <ul class="flex flex-col gap-2">
+      @for (item of items(); track $index) {
+        <app-item
+          [item]="item"
+          [index]="isIndexed() ? $index : null"
+          [(isLoading)]="isLoading"
+        >
+          @if (innerComponent !== null) {
+            {{ innerComponent() }}
+          }
+        </app-item>
+      }
+    </ul>
   `,
 })
 export class ItemsListComponent {
-  items = input<ItemSimple[]>();
+  items = input.required<ItemSimple[]>();
 
   isIndexed = input<boolean>(false);
   isLoading = model<boolean>(false);

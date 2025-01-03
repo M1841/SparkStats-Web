@@ -5,18 +5,28 @@ import { ItemsListComponent } from '@components/shared/items-list/items-list.com
 import { RangeSelectComponent } from '@components/shared/range-select/range-select.component';
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
+import { SectionHeaderComponent } from '../section-header/section-header.component';
 
 @Component({
   selector: 'app-top-items',
-  imports: [ItemsListComponent, RangeSelectComponent],
+  imports: [ItemsListComponent, RangeSelectComponent, SectionHeaderComponent],
   template: `
-    <main>
+    <main class="px-8 py-4 flex flex-col gap-6">
       <app-range-select [(range)]="selectedRange" />
-      @for (range of ranges; track $index) {
-        @if (range === selectedRange()) {
-          <app-items-list [items]="topItems[range]" [(isLoading)]="isLoading" />
+      <section class="flex flex-col gap-2">
+        <app-section-header
+          [iconSrc]="sectionHeader().iconSrc"
+          [text]="sectionHeader().text"
+        />
+        @for (range of ranges; track $index) {
+          @if (range === selectedRange()) {
+            <app-items-list
+              [items]="topItems[range]"
+              [(isLoading)]="isLoading"
+            />
+          }
         }
-      }
+      </section>
     </main>
   `,
 })
@@ -27,6 +37,8 @@ export class TopItemsComponent implements OnInit {
   ranges = [0, 1, 2];
   selectedRange = signal(0);
   isLoading = signal(true);
+
+  sectionHeader = input.required<{ iconSrc: string; text: string }>();
 
   endpoint = input<'track/top' | 'artist/top'>(Endpoints.track.top);
 
