@@ -1,16 +1,13 @@
 import { Component } from '@angular/core';
 
-import { RangeSelectComponent } from '@components/ui/range-select/range-select.component';
-import { ArtistsComponent } from '@components/top-artists/artists/artists.component';
+import { TopItemsComponent } from '@components/shared/top-items/top-items.component';
+import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-top-artists',
-  imports: [RangeSelectComponent, ArtistsComponent],
-  template: `
-    <main>
-      <app-range-select />
-      <app-artists />
-    </main>
-  `,
+  imports: [TopItemsComponent],
+  template: `<app-top-items [endpoint]="endpoint" />`,
 })
-export class TopArtistsComponent {}
+export class TopArtistsComponent {
+  endpoint = Endpoints.artist.top;
+}
