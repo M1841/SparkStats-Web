@@ -6,6 +6,7 @@ import { CurrentlyPlayingComponent } from '@components/home/currently-playing/cu
 import { HistoryComponent } from '@components/home/history/history.component';
 import { LoginButtonComponent } from '@components/home/login-button/login-button.component';
 import { ApiService } from '@services/api.service';
+import { LogoutButtonComponent } from '../../components/shared/logout-button/logout-button.component';
 
 @Component({
   selector: 'app-home',
@@ -15,11 +16,13 @@ import { ApiService } from '@services/api.service';
     CurrentlyPlayingComponent,
     HistoryComponent,
     LoginButtonComponent,
+    LogoutButtonComponent,
   ],
   template: `
     <main>
       @if (isAuthenticated) {
         <app-user-profile />
+        <app-logout-button />
         <app-features />
         <app-currently-playing />
         <app-history />

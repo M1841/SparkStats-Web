@@ -14,7 +14,7 @@ import { Endpoints } from '@utils/constants';
       <app-range-select [(range)]="selectedRange" />
       @for (range of ranges; track $index) {
         @if (range === selectedRange()) {
-          <app-items-list [items]="topItems[range]" />
+          <app-items-list [items]="topItems[range]" [(isLoading)]="isLoading" />
         }
       }
     </main>
@@ -23,9 +23,10 @@ import { Endpoints } from '@utils/constants';
 export class TopItemsComponent implements OnInit {
   constructor(private api: ApiService) {}
 
-  topItems: ItemSimple[][] = [];
+  topItems: ItemSimple[][] = [Array(50), Array(50), Array(50)];
   ranges = [0, 1, 2];
   selectedRange = signal(0);
+  isLoading = signal(true);
 
   endpoint = input<'track/top' | 'artist/top'>(Endpoints.track.top);
 
@@ -46,6 +47,7 @@ export class TopItemsComponent implements OnInit {
 
     forkJoin(requests).subscribe((responses) => {
       this.topItems = responses;
+      this.isLoading.set(false);
     });
   }
 }

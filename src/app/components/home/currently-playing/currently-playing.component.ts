@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 
 import { ItemComponent } from '@components/shared/item/item.component';
 import { ApiService } from '@services/api.service';
@@ -9,23 +9,27 @@ import { Endpoints } from '@utils/constants';
   imports: [ItemComponent],
   template: `<div>
     Currently Playing:
-    @if (track !== null) {
-      <app-item [item]="track" />
-    } @else {
-      No track is currently playing
-    }
+    <app-item [item]="track" [(isLoading)]="isLoading" />
   </div>`,
 })
 export class CurrentlyPlayingComponent implements OnInit {
   constructor(private api: ApiService) {}
 
-  track: TrackSimple | null = null;
+  track: TrackSimple | null = {
+    id: '',
+    name: 'No track is currently playing',
+    artists: [],
+  };
+  isLoading = signal(true);
 
   ngOnInit() {
     this.api
       .get<TrackSimple>(Endpoints.track.current)
       ?.subscribe((response) => {
-        this.track = response;
+        if (response !== null) {
+          this.track = response;
+        }
+        this.isLoading.set(false);
       });
   }
 }

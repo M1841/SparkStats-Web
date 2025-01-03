@@ -1,11 +1,13 @@
-type Profile = {
+type UserProfileSimple = {
+  id: string;
   name: string;
   url: string;
   pictureUrl?: string;
 };
 
 type TrackSimple = {
-  title: string;
+  id: string;
+  name: string;
   url?: string;
   artists: ArtistBase[];
   pictureUrl?: string;
@@ -17,6 +19,7 @@ type ArtistBase = {
 };
 
 type ArtistSimple = {
+  id: string;
   name: string;
   url: string;
   genres: string[];
@@ -25,13 +28,17 @@ type ArtistSimple = {
 
 type PlaylistSimple = {
   id: string;
-  title?: string;
+  name?: string;
   url?: string;
   trackCount: number;
   pictureUrl?: string;
 };
 
-type ItemSimple = TrackSimple | ArtistSimple | PlaylistSimple;
+type ItemSimple =
+  | UserProfileSimple
+  | TrackSimple
+  | ArtistSimple
+  | PlaylistSimple;
 
 type TimeRange = 'short-term' | 'medium-term' | 'long-term';
 

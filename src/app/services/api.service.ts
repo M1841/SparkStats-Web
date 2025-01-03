@@ -22,8 +22,6 @@ export class ApiService {
   refresh = () => {
     const expiresAt = parseInt(this.cookies.get('expires_at'));
 
-    console.log(expiresAt, Date.now());
-
     if (expiresAt <= Date.now()) {
       this.http
         .post<{
@@ -46,6 +44,11 @@ export class ApiService {
     }
   };
 
+  logout = () => {
+    this.cookies.deleteAll();
+    this.router.navigate(['/']);
+  };
+
   get = <T>(endpoint: Endpoint, params: string = '') => {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/']);
@@ -65,8 +68,7 @@ export class ApiService {
           if ([200, 204].includes(response.status)) {
             return response.body;
           } else {
-            this.cookies.deleteAll();
-            this.router.navigate(['/']);
+            this.logout();
             return null;
           }
         }),

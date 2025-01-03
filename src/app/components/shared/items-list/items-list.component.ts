@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 
 import { ItemComponent } from '@components/shared/item/item.component';
 
@@ -7,27 +7,22 @@ import { ItemComponent } from '@components/shared/item/item.component';
   imports: [ItemComponent],
   template: `
     @for (item of items(); track $index) {
-      <app-item [item]="item" />
+      <app-item
+        [item]="item"
+        [index]="isIndexed() ? $index : null"
+        [(isLoading)]="isLoading"
+      >
+        @if (innerComponent !== null) {
+          {{ innerComponent() }}
+        }
+      </app-item>
     }
   `,
 })
 export class ItemsListComponent {
-  items = input.required<ItemSimple[]>();
+  items = input<ItemSimple[]>();
 
-  isTrackList = computed(() =>
-    this.itemsAsTracks().every((item) => item.title !== undefined),
-  );
-  isArtistList = computed(() =>
-    this.itemsAsArtists().every((item) => item.name !== undefined),
-  );
-
-  itemsAsTracks = computed(() =>
-    this.items().map((item) => item as TrackSimple),
-  );
-  itemsAsArtists = computed(() =>
-    this.items().map((item) => item as ArtistSimple),
-  );
-  itemsAsPlaylists = computed(() =>
-    this.items().map((item) => item as PlaylistSimple),
-  );
+  isIndexed = input<boolean>(false);
+  isLoading = model<boolean>(false);
+  innerComponent = input<any>(null);
 }

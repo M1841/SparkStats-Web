@@ -1,27 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
+import { ItemComponent } from '../../shared/item/item.component';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [],
+  imports: [ItemComponent],
   template: ` <div>
     Your Profile:
-    <a [href]="profile?.url">
-      <img [src]="profile?.pictureUrl" alt="profile picture" />
-      {{ profile?.name }}
-    </a>
+    <app-item [item]="profile" [(isLoading)]="isLoading" />
   </div>`,
 })
 export class UserProfileComponent implements OnInit {
   constructor(private api: ApiService) {}
 
-  profile: Profile | null = null;
+  profile: UserProfileSimple | null = null;
+  isLoading = signal(true);
 
   ngOnInit() {
-    this.api.get<Profile>(Endpoints.user.profile)?.subscribe((response) => {
-      this.profile = response;
-    });
+    this.api
+      .get<UserProfileSimple>(Endpoints.user.profile)
+      ?.subscribe((response) => {
+        this.profile = response;
+        this.isLoading.set(false);
+      });
   }
 }
