@@ -20,11 +20,8 @@ export class HistoryComponent implements OnInit {
   ngOnInit() {
     this.api
       .get<TrackSimple[]>(Endpoints.track.history)
-      .subscribe(({ result, error }) => {
-        if (error !== null) {
-          window.location.href = '/';
-        }
-        this.history = result ?? [];
+      ?.subscribe((response) => {
+        this.history = response ?? [];
       });
   }
 }

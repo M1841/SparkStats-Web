@@ -24,11 +24,8 @@ export class CurrentlyPlayingComponent implements OnInit {
   ngOnInit() {
     this.api
       .get<TrackSimple>(Endpoints.track.current)
-      .subscribe(({ result, error }) => {
-        if (error !== null) {
-          window.location.href = '/';
-        }
-        this.track = result;
+      ?.subscribe((response) => {
+        this.track = response;
       });
   }
 }

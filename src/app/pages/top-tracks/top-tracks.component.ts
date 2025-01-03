@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { TopItemsComponent } from '@pages/shared/top-items/top-items.component';
+import { TopItemsComponent } from '@components/shared/top-items/top-items.component';
 import { Endpoints } from '@utils/constants';
 
 @Component({

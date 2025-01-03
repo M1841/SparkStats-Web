@@ -4,6 +4,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { map } from 'rxjs';
 
 import { environment } from '@environments/environment';
+import { Router } from '@angular/router';
+import { Endpoints } from '@utils/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +14,45 @@ export class ApiService {
   constructor(
     private cookies: CookieService,
     private http: HttpClient,
+    private router: Router,
   ) {}
 
+  isAuthenticated = computed(() => !!this.cookies.get('access_token'));
+
+  refresh = () => {
+    const expiresAt = parseInt(this.cookies.get('expires_at'));
+
+    console.log(expiresAt, Date.now());
+
+    if (expiresAt <= Date.now()) {
+      this.http
+        .post<{
+          accessToken: string;
+          expiresAt: string;
+        }>(`${environment.backendUrl}/${Endpoints.auth.refresh}`, {
+          refreshToken: this.cookies.get('refresh_token'),
+        })
+        .subscribe(({ accessToken, expiresAt }) => {
+          [
+            ['access_token', accessToken],
+            ['expires_at', expiresAt],
+          ].forEach(([key, value]) => {
+            this.cookies.set(key, value, {
+              secure: true,
+              sameSite: 'Strict',
+            });
+          });
+        });
+    }
+  };
+
   get = <T>(endpoint: Endpoint, params: string = '') => {
+    if (!this.isAuthenticated()) {
+      this.router.navigate(['/']);
+      return null;
+    }
+    this.refresh();
+
     return this.http
       .get<T>(`${environment.backendUrl}/${endpoint}${params}`, {
         headers: {
@@ -24,20 +62,14 @@ export class ApiService {
       })
       .pipe(
         map((response) => {
-          if (response.status === 200 || response.status === 204) {
-            return { result: response.body, error: null };
+          if ([200, 204].includes(response.status)) {
+            return response.body;
           } else {
             this.cookies.deleteAll();
-            return { result: null, error: "Can't fetch resource" };
+            this.router.navigate(['/']);
+            return null;
           }
         }),
       );
   };
-
-  isAuthenticated = computed(
-    () =>
-      this.cookies.get('access_token') !== null &&
-      this.cookies.get('access_token') !== undefined &&
-      this.cookies.get('access_token') !== '',
-  );
 }

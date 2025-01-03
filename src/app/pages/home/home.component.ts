@@ -5,7 +5,7 @@ import { FeaturesComponent } from '@components/home/features/features.component'
 import { CurrentlyPlayingComponent } from '@components/home/currently-playing/currently-playing.component';
 import { HistoryComponent } from '@components/home/history/history.component';
 import { LoginButtonComponent } from '@components/home/login-button/login-button.component';
-import { CookieService } from 'ngx-cookie-service';
+import { ApiService } from '@services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -18,23 +18,23 @@ import { CookieService } from 'ngx-cookie-service';
   ],
   template: `
     <main>
-      @if(isLoggedIn){
-      <app-user-profile />
-      <app-features />
-      <app-currently-playing />
-      <app-history />
+      @if (isAuthenticated) {
+        <app-user-profile />
+        <app-features />
+        <app-currently-playing />
+        <app-history />
       } @else {
-      <app-login-button />
+        <app-login-button />
       }
     </main>
   `,
 })
 export class HomeComponent implements OnInit {
-  constructor(private cookies: CookieService) {}
+  constructor(private api: ApiService) {}
 
-  isLoggedIn = false;
+  isAuthenticated = false;
 
   ngOnInit() {
-    this.isLoggedIn = this.cookies.get('access_token') ? true : false;
+    this.isAuthenticated = this.api.isAuthenticated();
   }
 }

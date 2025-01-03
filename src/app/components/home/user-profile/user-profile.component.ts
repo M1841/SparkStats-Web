@@ -20,13 +20,8 @@ export class UserProfileComponent implements OnInit {
   profile: Profile | null = null;
 
   ngOnInit() {
-    this.api
-      .get<Profile>(Endpoints.user.profile)
-      .subscribe(({ result, error }) => {
-        if (error !== null) {
-          window.location.href = '/';
-        }
-        this.profile = result;
-      });
+    this.api.get<Profile>(Endpoints.user.profile)?.subscribe((response) => {
+      this.profile = response;
+    });
   }
 }
