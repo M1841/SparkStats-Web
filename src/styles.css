@@ -17,4 +17,8 @@
   body {
     font-family: "Inter", system-ui, sans-serif;
   }
+  * {
+    transition-property: background, color, border;
+    transition-duration: 200ms;
+  }
 }

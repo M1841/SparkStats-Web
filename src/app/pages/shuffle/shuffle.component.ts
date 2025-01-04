@@ -14,7 +14,7 @@ import { SectionHeaderComponent } from '../../components/shared/section-header/s
         iconSrc="svg/music-list-dim.svg"
         text="Playlist Shuffler"
       />
-      <app-items-list [items]="playlists" [(isLoading)]="isLoading" />
+      <app-items-list [items]="playlists" [isLoading]="isLoading()" />
     </main>
   `,
 })

@@ -2,9 +2,11 @@ import {
   afterNextRender,
   Component,
   computed,
+  ElementRef,
   input,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
 
 import { LogoutButtonComponent } from '@components/shared/logout-button/logout-button.component';
@@ -14,16 +16,26 @@ import { ApiService } from '@services/api.service';
   selector: 'app-navbar',
   imports: [LogoutButtonComponent],
   template: `
-    <nav class="sticky top-0">
+    <nav class="sticky top-0 z-50">
       <header
-        class="py-2 px-8 border-b-medium border-b-[1px] flex justify-between sticky top-0 bg-dark"
+        [class]="
+          'py-2 px-8 border-b-medium border-b-[1px] flex bg-dark ' +
+          (isAuthenticated() ? 'justify-between' : 'justify-center')
+        "
       >
-        <a href="/" class="font-bold text-lg flex-center gap-1">
+        <a
+          href="/"
+          [class]="
+            'font-bold text-lg flex-center gap-1 ' +
+            (!isAuthenticated() && 'py-1')
+          "
+        >
           <img src="svg/spark.svg" width="20" height="20" />
           SparkStats
         </a>
-        @if (isAuthenticated) {
+        @if (isAuthenticated()) {
           <button
+            #toggleButton
             (click)="toggleMenu()"
             class="relative p-2 rounded-full hover:bg-darkDim"
           >
@@ -47,11 +59,13 @@ import { ApiService } from '@services/api.service';
           </button>
         }
       </header>
-      @if (isAuthenticated) {
+      @if (isAuthenticated()) {
         <aside
+          #menu
           [class]="
-            'absolute w-52 border-l-medium border-l-[1px] transition-all duration-200 bg-dark flex flex-col justify-between ' +
-            horizontalPosition()
+            'absolute w-52 border-l-medium border-l-[1px] transition-[right] duration-200 bg-dark flex flex-col justify-between ' +
+            menuPosition() +
+            menuScale()
           "
           style="height: calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem)"
         >
@@ -78,14 +92,16 @@ export class NavbarComponent implements OnInit {
   constructor(private api: ApiService) {
     afterNextRender(() => {
       window.addEventListener('keydown', this.handleKeydown);
+      window.addEventListener('click', this.handleClickOutside);
     });
   }
-  isAuthenticated = false;
+  isAuthenticated = signal(false);
 
   isShowingMenu = signal(false);
-  horizontalPosition = computed(() =>
-    this.isShowingMenu() ? 'right-0' : '-right-52',
+  menuPosition = computed(() =>
+    this.isShowingMenu() ? 'right-0 ' : '-right-52 ',
   );
+  menuScale = signal('scale-x-0');
 
   navItems = [
     {
@@ -105,7 +121,18 @@ export class NavbarComponent implements OnInit {
     },
   ];
 
-  toggleMenu = () => this.isShowingMenu.update((state) => !state);
+  menu = viewChild.required<ElementRef>('menu');
+  toggleButton = viewChild.required<ElementRef>('toggleButton');
+
+  toggleMenu = () => {
+    this.isShowingMenu.update((state) => !state);
+    setTimeout(
+      () => {
+        this.menuScale.update((state) => (state === '' ? 'scale-x-0' : ''));
+      },
+      this.isShowingMenu() ? 0 : 200,
+    );
+  };
 
   handleKeydown = (event: KeyboardEvent) => {
     if (event.ctrlKey && event.key === 'b') {
@@ -114,7 +141,17 @@ export class NavbarComponent implements OnInit {
     }
   };
 
+  handleClickOutside = (event: MouseEvent) => {
+    if (
+      this.isShowingMenu() &&
+      !this.menu().nativeElement.contains(event.target as Node) &&
+      !this.toggleButton().nativeElement.contains(event.target as Node)
+    ) {
+      this.toggleMenu();
+    }
+  };
+
   ngOnInit() {
-    this.isAuthenticated = this.api.isAuthenticated();
+    this.isAuthenticated.set(this.api.isAuthenticated());
   }
 }

@@ -12,7 +12,7 @@ import { SectionHeaderComponent } from '../section-header/section-header.compone
   imports: [ItemsListComponent, RangeSelectComponent, SectionHeaderComponent],
   template: `
     <main class="px-8 py-4 flex flex-col gap-6">
-      <app-range-select [(range)]="selectedRange" />
+      <app-range-select [(selectedRange)]="selectedRange" />
       <section class="flex flex-col gap-2">
         <app-section-header
           [iconSrc]="sectionHeader().iconSrc"
@@ -22,7 +22,7 @@ import { SectionHeaderComponent } from '../section-header/section-header.compone
           @if (range === selectedRange()) {
             <app-items-list
               [items]="topItems[range]"
-              [(isLoading)]="isLoading"
+              [isLoading]="isLoading()"
             />
           }
         }

@@ -6,7 +6,14 @@ import { Endpoints } from '@utils/constants';
 @Component({
   selector: 'app-login-button',
   imports: [],
-  template: ` <a [href]="loginUrl">Log in with Spotify</a> `,
+  template: `
+    <a
+      [href]="loginUrl"
+      class="border-medium border-[1px] rounded-lg px-24 py-3 text-sm flex items-center gap-2 hover:bg-darkDim"
+    >
+      <img src="svg/spotify.svg" width="22" height="22" />Log in with Spotify</a
+    >
+  `,
 })
 export class LoginButtonComponent {
   loginUrl = `${environment.backendUrl}/${Endpoints.auth.login}`;

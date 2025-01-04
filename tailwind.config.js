@@ -9,6 +9,9 @@ module.exports = {
         medium: "#3a383f",
         lightDim: "#a39fa9",
         light: "#fbfbfb",
+        primaryDark: "#132821",
+        primaryMedium: "#1c3d31",
+        primaryLight: "#69dfb0",
       },
       fontFamily: {
         inter: ["Inter", "system-ui", "sans-serif"],

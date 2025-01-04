@@ -13,12 +13,17 @@ import { Component, computed, input, model } from '@angular/core';
         }
 
         @if (isLoading()) {
-          <span class="h-12 w-12 rounded-md bg-darkDim animate-pulse"></span>
+          <span
+            class="h-12 w-12 rounded-[0.2rem] bg-darkDim animate-pulse"
+          ></span>
         } @else {
           <img
-            class="h-12 w-12 rounded-md"
-            [src]="item()?.pictureUrl ?? ''"
-            alt="cover picture"
+            [class]="
+              'h-12 w-12 rounded-[0.2rem] bg-darkDim ' +
+              (item()?.pictureUrl ? '' : 'p-3')
+            "
+            [src]="item()?.pictureUrl ?? altIconSrc()"
+            alt=""
           />
         }
         <main class="flex flex-col justify-center">
@@ -29,7 +34,12 @@ import { Component, computed, input, model } from '@angular/core';
           } @else {
             <a
               [href]="item()?.url ?? ''"
-              class="hover:underline text-sm"
+              [class]="
+                'text-sm ' +
+                (item()?.url
+                  ? 'hover:underline'
+                  : 'text-lightDim pointer-events-none')
+              "
               target="_blank"
             >
               {{ item()?.name }}
@@ -81,7 +91,7 @@ import { Component, computed, input, model } from '@angular/core';
 export class ItemComponent {
   item = input<ItemSimple | null>(null);
   index = input<number | null>(null);
-  isLoading = model<boolean>(false);
+  isLoading = input<boolean>(false);
 
   isTrack = computed(() => this.itemAsTrack().artists !== undefined);
   isArtist = computed(() => this.itemAsArtist().genres !== undefined);
@@ -89,6 +99,21 @@ export class ItemComponent {
   isUserProfile = computed(
     () => !this.isTrack() && !this.isArtist() && !this.isPlaylist(),
   );
+
+  altIconSrc = computed(() => {
+    switch (true) {
+      case this.isTrack():
+        return 'svg/music-dim.svg';
+      case this.isArtist():
+        return 'svg/microphone-dim.svg';
+      case this.isPlaylist():
+        return 'svg/music-list-dim.svg';
+      case this.isUserProfile():
+        return 'svg/user.svg';
+      default:
+        return '';
+    }
+  });
 
   itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
   itemAsTrack = computed(() => this.item() as TrackSimple);

@@ -11,7 +11,7 @@ import { ItemComponent } from '@components/shared/item/item.component';
         <app-item
           [item]="item"
           [index]="isIndexed() ? $index : null"
-          [(isLoading)]="isLoading"
+          [isLoading]="isLoading()"
         >
           @if (innerComponent !== null) {
             {{ innerComponent() }}
@@ -25,6 +25,6 @@ export class ItemsListComponent {
   items = input.required<ItemSimple[]>();
 
   isIndexed = input<boolean>(false);
-  isLoading = model<boolean>(false);
+  isLoading = input<boolean>(false);
   innerComponent = input<any>(null);
 }
