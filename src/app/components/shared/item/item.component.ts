@@ -1,4 +1,4 @@
-import { Component, computed, input, model } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-item',
@@ -9,7 +9,9 @@ import { Component, computed, input, model } from '@angular/core';
     >
       <section class="flex gap-2 items-center">
         @if (index() !== null) {
-          {{ index()! + 1 }}
+          <span class="text-sm text-lightDim w-5 text-center">{{
+            index()! + 1
+          }}</span>
         }
 
         @if (isLoading()) {
@@ -37,7 +39,7 @@ import { Component, computed, input, model } from '@angular/core';
               [class]="
                 'text-sm ' +
                 (item()?.url
-                  ? 'hover:underline'
+                  ? 'hover:underline focus:underline outline-none'
                   : 'text-lightDim pointer-events-none')
               "
               target="_blank"
@@ -56,7 +58,7 @@ import { Component, computed, input, model } from '@angular/core';
                     @if (artist.url) {
                       <a
                         [href]="artist.url"
-                        class="hover:underline"
+                        class="hover:underline focus:underline outline-none"
                         target="_blank"
                         >{{ artist.name }}</a
                       >{{ separator($index, $count) }}

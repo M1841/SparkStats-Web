@@ -1,4 +1,4 @@
-import { Component, model } from '@angular/core';
+import { afterNextRender, Component, model } from '@angular/core';
 import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
 
 @Component({
@@ -30,6 +30,11 @@ import { SectionHeaderComponent } from '@components/shared/section-header/sectio
   </section> `,
 })
 export class RangeSelectComponent {
+  constructor() {
+    afterNextRender(() => {
+      window.addEventListener('keydown', this.handleKeydown);
+    });
+  }
   selectedRange = model(0);
 
   ranges = [
@@ -49,5 +54,12 @@ export class RangeSelectComponent {
 
   toggleRange = (range: number) => {
     this.selectedRange.set(range);
+  };
+
+  handleKeydown = (event: KeyboardEvent) => {
+    if ([1, 2, 3].includes(parseInt(event.key))) {
+      event.preventDefault();
+      this.selectedRange.set(parseInt(event.key) - 1);
+    }
   };
 }

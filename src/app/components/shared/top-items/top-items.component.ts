@@ -23,6 +23,7 @@ import { SectionHeaderComponent } from '../section-header/section-header.compone
             <app-items-list
               [items]="topItems[range]"
               [isLoading]="isLoading()"
+              [isIndexed]="true"
             />
           }
         }

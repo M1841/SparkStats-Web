@@ -26,7 +26,7 @@ import { ApiService } from '@services/api.service';
         <a
           href="/"
           [class]="
-            'font-bold text-lg flex-center gap-1 ' +
+            'font-bold text-lg flex-center gap-1 outline-none focus:underline ' +
             (!isAuthenticated() && 'py-1')
           "
         >
@@ -37,7 +37,7 @@ import { ApiService } from '@services/api.service';
           <button
             #toggleButton
             (click)="toggleMenu()"
-            class="relative p-2 rounded-full hover:bg-darkDim"
+            class="relative p-2 rounded-full hover:bg-darkDim focus:bg-darkDim outline-none"
           >
             <img
               src="svg/menu.svg"
@@ -73,7 +73,7 @@ import { ApiService } from '@services/api.service';
             @for (item of navItems; track $index) {
               <a
                 [href]="item.url"
-                class="flex p-2 items-center gap-2 text-[0.9rem] hover:bg-darkDim rounded-md"
+                class="flex p-2 items-center gap-2 text-[0.9rem] hover:bg-darkDim rounded-md focus:bg-darkDim outline-none"
               >
                 <img [src]="item.iconSrc" width="18" height="18" />
                 {{ item.name }}
@@ -135,9 +135,29 @@ export class NavbarComponent implements OnInit {
   };
 
   handleKeydown = (event: KeyboardEvent) => {
-    if (event.ctrlKey && event.key === 'b') {
+    if (event.key === '`') {
       event.preventDefault();
       this.toggleMenu();
+
+      if (this.isShowingMenu()) {
+        this.menu().nativeElement.firstChild.firstChild.focus();
+      }
+    }
+    if (event.key === 'Tab') {
+      setTimeout(() => {
+        if (
+          !this.isShowingMenu() &&
+          this.menu().nativeElement.contains(document.activeElement)
+        ) {
+          this.toggleMenu();
+        }
+        if (
+          this.isShowingMenu() &&
+          !this.menu().nativeElement.contains(document.activeElement)
+        ) {
+          this.toggleMenu();
+        }
+      }, 10);
     }
   };
 
