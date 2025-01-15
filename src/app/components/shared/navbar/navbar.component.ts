@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   ElementRef,
-  input,
   OnInit,
   signal,
   viewChild,
@@ -18,16 +17,18 @@ import { ApiService } from '@services/api.service';
   template: `
     <nav class="sticky top-0 z-50">
       <header
-        [class]="
-          'py-2 px-8 border-b-medium border-b-[1px] flex bg-dark ' +
-          (isAuthenticated() ? 'justify-between' : 'justify-center')
+        class="
+          py-2 px-8 border-b-medium border-b-[1px] flex bg-dark {{
+          isAuthenticated() ? 'justify-between' : 'justify-center'
+        }}
         "
       >
         <a
           href="/"
-          [class]="
-            'font-bold text-lg flex-center gap-1 outline-none focus:underline ' +
-            (!isAuthenticated() && 'py-1')
+          class="
+            font-bold text-lg flex-center gap-1 outline-none focus:underline {{
+            !isAuthenticated() && 'py-1'
+          }}
           "
         >
           <img src="svg/spark.svg" width="20" height="20" />

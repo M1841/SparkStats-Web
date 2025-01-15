@@ -1,10 +1,20 @@
-import { Component, computed, input } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  ElementRef,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { ContextMenuComponent } from '../context-menu/context-menu.component';
 
 @Component({
   selector: 'app-item',
-  imports: [],
+  imports: [ContextMenuComponent],
   template: `
     <li
+      #itemRef
       class="flex items-center justify-between border-medium border-[1px] rounded-lg p-2 -mx-2"
     >
       <section class="flex gap-2 items-center">
@@ -20,27 +30,28 @@ import { Component, computed, input } from '@angular/core';
           ></span>
         } @else {
           <img
-            [class]="
-              'h-12 w-12 rounded-[0.2rem] bg-darkDim ' +
-              (item()?.pictureUrl ? '' : 'p-3')
-            "
-            [src]="item()?.pictureUrl ?? altIconSrc()"
+            class="
+              'h-12 w-12 rounded-[0.2rem] bg-darkDim {{
+              item()?.pictureUrl ? '' : 'p-3'
+            }}"
+            src="{{ item()?.pictureUrl ?? altIconSrc() }}"
             alt=""
           />
         }
         <main class="flex flex-col justify-center">
           @if (isLoading()) {
             <span
-              class="h-4 w-48 rounded-md bg-darkDim animate-pulse mb-2"
+              class="h-4 w-48 rounded-sm bg-darkDim animate-pulse mb-2"
             ></span>
           } @else {
             <a
-              [href]="item()?.url ?? ''"
-              [class]="
-                'text-sm ' +
-                (item()?.url
+              href="{{ item()?.url ?? '' }}"
+              class="text-sm
+                {{
+                item()?.url
                   ? 'hover:underline focus:underline outline-none'
-                  : 'text-lightDim pointer-events-none')
+                  : 'text-lightDim pointer-events-none'
+              }}
               "
               target="_blank"
             >
@@ -49,7 +60,7 @@ import { Component, computed, input } from '@angular/core';
           }
 
           @if (isLoading()) {
-            <span class="h-3 w-36 rounded-md bg-darkDim animate-pulse"></span>
+            <span class="h-3 w-36 rounded-sm bg-darkDim animate-pulse"></span>
           } @else {
             @switch (true) {
               @case (isTrack()) {
@@ -57,7 +68,7 @@ import { Component, computed, input } from '@angular/core';
                   @for (artist of itemAsTrack().artists; track $index) {
                     @if (artist.url) {
                       <a
-                        [href]="artist.url"
+                        href="{{ artist.url }}"
                         class="hover:underline focus:underline outline-none"
                         target="_blank"
                         >{{ artist.name }}</a
@@ -86,14 +97,33 @@ import { Component, computed, input } from '@angular/core';
           }
         </main>
       </section>
-      <ng-content />
+      @if (!this.isLoading()) {
+        <div #contextMenuRef>
+          <app-context-menu
+            [isOpen]="isContextMenuOpen()"
+            [position]="contextMenuPosition()"
+          />
+        </div>
+      }
     </li>
   `,
 })
 export class ItemComponent {
+  constructor() {
+    afterNextRender(() => {
+      window.addEventListener('click', this.handleClick);
+      window.addEventListener('contextmenu', this.handleContextMenu);
+    });
+  }
+
   item = input<ItemSimple | null>(null);
   index = input<number | null>(null);
   isLoading = input<boolean>(false);
+
+  itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
+  itemAsTrack = computed(() => this.item() as TrackSimple);
+  itemAsArtist = computed(() => this.item() as ArtistSimple);
+  itemAsPlaylist = computed(() => this.item() as PlaylistSimple);
 
   isTrack = computed(() => this.itemAsTrack().artists !== undefined);
   isArtist = computed(() => this.itemAsArtist().genres !== undefined);
@@ -101,6 +131,9 @@ export class ItemComponent {
   isUserProfile = computed(
     () => !this.isTrack() && !this.isArtist() && !this.isPlaylist(),
   );
+
+  separator = (index: number, count: number) =>
+    index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
 
   altIconSrc = computed(() => {
     switch (true) {
@@ -117,11 +150,34 @@ export class ItemComponent {
     }
   });
 
-  itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
-  itemAsTrack = computed(() => this.item() as TrackSimple);
-  itemAsArtist = computed(() => this.item() as ArtistSimple);
-  itemAsPlaylist = computed(() => this.item() as PlaylistSimple);
+  isContextMenuOpen = signal(false);
+  contextMenuPosition = signal({ x: 0, y: 0 });
 
-  separator = (index: number, count: number) =>
-    index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
+  itemRef = viewChild.required<ElementRef>('itemRef');
+  contextMenuRef = viewChild.required<ElementRef>('contextMenuRef');
+
+  handleClick = (event: MouseEvent) => {
+    if (
+      this.isContextMenuOpen() &&
+      !this.contextMenuRef().nativeElement.contains(event.target as Node)
+    ) {
+      this.isContextMenuOpen.set(false);
+    }
+  };
+
+  handleContextMenu = (event: MouseEvent) => {
+    if (this.itemRef().nativeElement.contains(event.target as Node)) {
+      if (!this.contextMenuRef().nativeElement.contains(event.target as Node)) {
+        event.preventDefault();
+      }
+
+      this.isContextMenuOpen.set(true);
+      this.contextMenuPosition.set({
+        x: event.screenX,
+        y: event.screenY,
+      });
+    } else {
+      this.isContextMenuOpen.set(false);
+    }
+  };
 }
