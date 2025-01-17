@@ -7,9 +7,9 @@ import { ApiService } from '@services/api.service';
   imports: [],
   template: ` <button
     (click)="logout()"
-    class="flex p-2 items-center gap-2 text-[0.9rem] hover:bg-darkDim rounded-md w-full focus:bg-darkDim outline-none"
+    class="flex p-2 items-center gap-[0.33rem] text-[0.8rem] hover:bg-dark-dim rounded-md w-full focus:bg-dark-dim outline-none"
   >
-    <img src="svg/logout.svg" width="18" height="18" />
+    <img src="svg/logout.svg" width="16" height="16" />
     Log out
   </button>`,
 })

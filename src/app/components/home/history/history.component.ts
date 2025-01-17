@@ -8,8 +8,8 @@ import { Endpoints } from '@utils/constants';
 @Component({
   selector: 'app-history',
   imports: [ItemsListComponent, SectionHeaderComponent],
-  template: `<section class="flex flex-col gap-2">
-    <app-section-header iconSrc="svg/history.svg" text="History" />
+  template: `<section class="flex flex-col gap-1">
+    <app-section-header iconSrc="svg/history-dim.svg" text="History" />
     <app-items-list [items]="history()" [isLoading]="isLoading()" />
   </section>`,
 })

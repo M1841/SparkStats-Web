@@ -5,13 +5,13 @@ module.exports = {
     extend: {
       colors: {
         dark: "#0f0f11",
-        darkDim: "#212024",
+        "dark-dim": "#212024",
         medium: "#3a383f",
-        lightDim: "#a39fa9",
+        "light-dim": "#a39fa9",
         light: "#fbfbfb",
-        primaryDark: "#132821",
-        primaryMedium: "#1c3d31",
-        primaryLight: "#69dfb0",
+        "primary-dark": "#132821",
+        "primary-medium": "#1c3d31",
+        "primary-light": "#69dfb0",
       },
       fontFamily: {
         inter: ["Inter", "system-ui", "sans-serif"],

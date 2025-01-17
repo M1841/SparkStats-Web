@@ -8,8 +8,8 @@ import { ItemComponent } from '@components/shared/item/item.component';
 @Component({
   selector: 'app-user-profile',
   imports: [ItemComponent, SectionHeaderComponent],
-  template: ` <section class="flex flex-col gap-2">
-    <app-section-header iconSrc="svg/user.svg" text="Your Profile" />
+  template: ` <section class="flex flex-col gap-1">
+    <app-section-header iconSrc="svg/user-dim.svg" text="Your Profile" />
     <app-item [item]="profile" [isLoading]="isLoading()" />
   </section>`,
 })

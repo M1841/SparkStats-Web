@@ -6,7 +6,7 @@ import { ItemComponent } from '@components/shared/item/item.component';
   selector: 'app-items-list',
   imports: [ItemComponent],
   template: `
-    <ul class="flex flex-col gap-2">
+    <ul class="flex flex-col gap-1">
       @for (item of items(); track $index) {
         <app-item
           [item]="item"

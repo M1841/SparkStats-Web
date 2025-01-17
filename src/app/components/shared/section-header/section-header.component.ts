@@ -4,8 +4,8 @@ import { Component, input } from '@angular/core';
   selector: 'app-section-header',
   imports: [],
   template: `
-    <span class="text-lightDim text-sm flex gap-1 items-center">
-      <img [src]="iconSrc()" width="16" height="16" />
+    <span class="text-light-dim text-[0.8rem] flex gap-1 items-center">
+      <img [src]="iconSrc()" width="14" height="14" />
       {{ text() }}
     </span>
   `,

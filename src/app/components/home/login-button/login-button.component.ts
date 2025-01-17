@@ -9,7 +9,7 @@ import { Endpoints } from '@utils/constants';
   template: `
     <a
       [href]="loginUrl"
-      class="border-medium border-[1px] rounded-lg px-24 py-3 text-sm flex items-center gap-2 hover:bg-darkDim focus:bg-darkDim outline-none"
+      class="border-medium border-[1px] rounded-lg px-24 py-3 text-sm flex items-center gap-2 hover:bg-dark-dim focus:bg-dark-dim outline-none"
     >
       <img src="svg/spotify.svg" width="22" height="22" />Log in with Spotify</a
     >

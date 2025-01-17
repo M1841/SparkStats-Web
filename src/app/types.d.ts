@@ -9,8 +9,8 @@ type TrackSimple = {
   id: string;
   name: string;
   url?: string;
-  artists: ArtistBase[];
   pictureUrl?: string;
+  artists: ArtistBase[];
 };
 
 type ArtistBase = {
@@ -22,16 +22,17 @@ type ArtistSimple = {
   id: string;
   name: string;
   url: string;
-  genres: string[];
   pictureUrl?: string;
+  genres: string[];
 };
 
 type PlaylistSimple = {
   id: string;
   name?: string;
   url?: string;
-  trackCount: number;
   pictureUrl?: string;
+  owner: UserProfileSimple;
+  trackCount: number;
 };
 
 type ItemSimple =

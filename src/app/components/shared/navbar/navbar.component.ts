@@ -38,10 +38,10 @@ import { ApiService } from '@services/api.service';
           <button
             #toggleButton
             (click)="toggleMenu()"
-            class="relative p-2 rounded-full hover:bg-darkDim focus:bg-darkDim outline-none"
+            class="relative p-2 rounded-full hover:bg-dark-dim focus:bg-dark-dim outline-none"
           >
             <img
-              src="svg/menu.svg"
+              src="svg/menu-dim.svg"
               width="20"
               height="20"
               [class]="
@@ -49,7 +49,7 @@ import { ApiService } from '@services/api.service';
               "
             />
             <img
-              src="svg/close.svg"
+              src="svg/close-dim.svg"
               width="20"
               height="20"
               [class]="
@@ -64,19 +64,19 @@ import { ApiService } from '@services/api.service';
         <aside
           #menu
           [class]="
-            'absolute w-52 border-l-medium border-l-[1px] transition-[right] duration-200 bg-dark flex flex-col justify-between ' +
+            'absolute w-48 border-l-medium border-l-[1px] transition-[right] duration-200 bg-dark flex flex-col justify-between ' +
             menuPosition() +
             menuScale()
           "
-          style="height: calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem)"
+          [style.height]="'calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem)'"
         >
           <section class="p-2 flex flex-col gap-1">
             @for (item of navItems; track $index) {
               <a
                 [href]="item.url"
-                class="flex p-2 items-center gap-2 text-[0.9rem] hover:bg-darkDim rounded-md focus:bg-darkDim outline-none"
+                class="flex p-2 items-center gap-[0.33rem] text-[0.8rem] hover:bg-dark-dim rounded-md focus:bg-dark-dim outline-none"
               >
-                <img [src]="item.iconSrc" width="18" height="18" />
+                <img [src]="item.iconSrc" width="16" height="16" />
                 {{ item.name }}
               </a>
             }
@@ -100,7 +100,7 @@ export class NavbarComponent implements OnInit {
 
   isShowingMenu = signal(false);
   menuPosition = computed(() =>
-    this.isShowingMenu() ? 'right-0 ' : '-right-52 ',
+    this.isShowingMenu() ? 'right-0 ' : '-right-48 ',
   );
   menuScale = signal('scale-x-0');
 

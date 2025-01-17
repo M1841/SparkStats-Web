@@ -11,9 +11,9 @@ import { SectionHeaderComponent } from '../section-header/section-header.compone
   selector: 'app-top-items',
   imports: [ItemsListComponent, RangeSelectComponent, SectionHeaderComponent],
   template: `
-    <main class="px-8 py-4 flex flex-col gap-6">
+    <main class="px-8 py-3 flex flex-col gap-3">
       <app-range-select [(selectedRange)]="selectedRange" />
-      <section class="flex flex-col gap-2">
+      <section class="flex flex-col gap-1">
         <app-section-header
           [iconSrc]="sectionHeader().iconSrc"
           [text]="sectionHeader().text"

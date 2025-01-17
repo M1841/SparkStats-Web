@@ -1,37 +1,28 @@
-import {
-  afterNextRender,
-  Component,
-  computed,
-  ElementRef,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { ContextMenuComponent } from '../context-menu/context-menu.component';
+import { Component, computed, input } from '@angular/core';
+
+import { ItemMenuComponent } from '@components/shared/item-menu/item-menu.component';
 
 @Component({
   selector: 'app-item',
-  imports: [ContextMenuComponent],
+  imports: [ItemMenuComponent],
   template: `
     <li
       #itemRef
-      class="flex items-center justify-between border-medium border-[1px] rounded-lg p-2 -mx-2"
+      class="flex items-center justify-between border-medium border-[1px] rounded-md p-2 -mx-2"
     >
       <section class="flex gap-2 items-center">
         @if (index() !== null) {
-          <span class="text-sm text-lightDim w-5 text-center">{{
+          <span class="text-[0.8rem] text-light-dim w-5 text-center">{{
             index()! + 1
           }}</span>
         }
 
         @if (isLoading()) {
-          <span
-            class="h-12 w-12 rounded-[0.2rem] bg-darkDim animate-pulse"
-          ></span>
+          <span class="h-12 w-12 rounded-sm bg-dark-dim animate-pulse"></span>
         } @else {
           <img
             class="
-              'h-12 w-12 rounded-[0.2rem] bg-darkDim {{
+              'h-12 w-12 rounded-sm bg-dark-dim object-cover aspect-square {{
               item()?.pictureUrl ? '' : 'p-3'
             }}"
             src="{{ item()?.pictureUrl ?? altIconSrc() }}"
@@ -41,7 +32,7 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
         <main class="flex flex-col justify-center">
           @if (isLoading()) {
             <span
-              class="h-4 w-48 rounded-sm bg-darkDim animate-pulse mb-2"
+              class="h-4 w-48 rounded-sm bg-dark-dim animate-pulse mb-2"
             ></span>
           } @else {
             <a
@@ -50,7 +41,7 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
                 {{
                 item()?.url
                   ? 'hover:underline focus:underline outline-none'
-                  : 'text-lightDim pointer-events-none'
+                  : 'text-light-dim pointer-events-none'
               }}
               "
               target="_blank"
@@ -60,11 +51,11 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
           }
 
           @if (isLoading()) {
-            <span class="h-3 w-36 rounded-sm bg-darkDim animate-pulse"></span>
+            <span class="h-3 w-36 rounded-sm bg-dark-dim animate-pulse"></span>
           } @else {
             @switch (true) {
               @case (isTrack()) {
-                <p class="text-[0.8rem] text-lightDim">
+                <p class="text-[0.8rem] text-light-dim">
                   @for (artist of itemAsTrack().artists; track $index) {
                     @if (artist.url) {
                       <a
@@ -80,14 +71,21 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
                 </p>
               }
               @case (isArtist()) {
-                <p class="text-[0.8rem] text-lightDim">
+                <p class="text-[0.8rem] text-light-dim">
                   @for (genre of itemAsArtist().genres; track $index) {
                     {{ genre }}{{ separator($index, $count) }}
                   }
                 </p>
               }
               @case (isPlaylist()) {
-                <p class="text-[0.8rem] text-lightDim">
+                <p class="text-[0.8rem] text-light-dim">
+                  <a
+                    href="{{ itemAsPlaylist().owner.url }}"
+                    class="hover:underline focus:underline outline-none"
+                    target="_blank"
+                    >{{ itemAsPlaylist().owner.name }}</a
+                  >
+                  ·
                   {{ itemAsPlaylist().trackCount }} track{{
                     itemAsPlaylist().trackCount === 1 ? '' : 's'
                   }}
@@ -97,25 +95,13 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
           }
         </main>
       </section>
-      @if (!this.isLoading()) {
-        <div #contextMenuRef>
-          <app-context-menu
-            [isOpen]="isContextMenuOpen()"
-            [position]="contextMenuPosition()"
-          />
-        </div>
+      @if (!this.isLoading() && item()?.url) {
+        <app-item-menu [item]="item()!" />
       }
     </li>
   `,
 })
 export class ItemComponent {
-  constructor() {
-    afterNextRender(() => {
-      window.addEventListener('click', this.handleClick);
-      window.addEventListener('contextmenu', this.handleContextMenu);
-    });
-  }
-
   item = input<ItemSimple | null>(null);
   index = input<number | null>(null);
   isLoading = input<boolean>(false);
@@ -144,40 +130,9 @@ export class ItemComponent {
       case this.isPlaylist():
         return 'svg/music-list-dim.svg';
       case this.isUserProfile():
-        return 'svg/user.svg';
+        return 'svg/user-dim.svg';
       default:
         return '';
     }
   });
-
-  isContextMenuOpen = signal(false);
-  contextMenuPosition = signal({ x: 0, y: 0 });
-
-  itemRef = viewChild.required<ElementRef>('itemRef');
-  contextMenuRef = viewChild.required<ElementRef>('contextMenuRef');
-
-  handleClick = (event: MouseEvent) => {
-    if (
-      this.isContextMenuOpen() &&
-      !this.contextMenuRef().nativeElement.contains(event.target as Node)
-    ) {
-      this.isContextMenuOpen.set(false);
-    }
-  };
-
-  handleContextMenu = (event: MouseEvent) => {
-    if (this.itemRef().nativeElement.contains(event.target as Node)) {
-      if (!this.contextMenuRef().nativeElement.contains(event.target as Node)) {
-        event.preventDefault();
-      }
-
-      this.isContextMenuOpen.set(true);
-      this.contextMenuPosition.set({
-        x: event.screenX,
-        y: event.screenY,
-      });
-    } else {
-      this.isContextMenuOpen.set(false);
-    }
-  };
 }

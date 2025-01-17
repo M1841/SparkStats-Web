@@ -4,16 +4,16 @@ import { SectionHeaderComponent } from '@components/shared/section-header/sectio
 @Component({
   selector: 'app-range-select',
   imports: [SectionHeaderComponent],
-  template: `<section class="flex flex-col gap-2">
+  template: `<section class="flex flex-col gap-1">
     <app-section-header iconSrc="svg/calendar-dim.svg" text="Time Range" />
-    <div class="flex gap-2 -mx-2">
+    <div class="flex gap-1 -mx-2">
       @for (range of ranges; track range.value) {
         <label
           [class]="
-            'border-[1px] rounded-lg p-2 w-1/3 text-sm flex-center cursor-pointer ' +
+            'border-[1px] rounded-md p-2 w-1/3 text-[0.8rem] flex-center cursor-pointer ' +
             (selectedRange() === range.value
-              ? 'border-primaryDark text-primaryLight bg-primaryDark hover:border-primaryMedium hover:bg-primaryMedium'
-              : 'border-medium text-lightDim hover:bg-darkDim')
+              ? 'border-primary-dark text-primary-light bg-primary-dark hover:border-primary-medium hover:bg-primary-medium'
+              : 'border-medium text-light-dim hover:bg-dark-dim')
           "
         >
           {{ range.name }}

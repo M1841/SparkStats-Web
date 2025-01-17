@@ -17,8 +17,10 @@ import { ApiService } from '@services/api.service';
   template: `
     @if (isAuthenticated) {
       <main
-        class="px-8 py-4 flex flex-col gap-6"
-        style="min-height: calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem)"
+        class="px-8 py-3 flex flex-col gap-3"
+        [style.min-height]="
+          'calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem - 1px)'
+        "
       >
         <app-user-profile />
         <app-currently-playing />
@@ -27,7 +29,7 @@ import { ApiService } from '@services/api.service';
     } @else {
       <main
         class="flex-center flex-col gap-2"
-        style="height: calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem - 1px)"
+        [style.height]="'calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem - 1px)'"
       >
         <app-login-button />
       </main>
