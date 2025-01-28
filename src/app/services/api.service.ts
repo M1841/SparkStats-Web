@@ -49,7 +49,7 @@ export class ApiService {
     this.router.navigate(['/']);
   };
 
-  get = <T>(endpoint: Endpoint, params: string = '') => {
+  get = <Res>(endpoint: Endpoint, params: string = '') => {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/']);
       return null;
@@ -57,7 +57,33 @@ export class ApiService {
     this.refresh();
 
     return this.http
-      .get<T>(`${environment.backendUrl}/${endpoint}${params}`, {
+      .get<Res>(`${environment.backendUrl}/${endpoint}${params}`, {
+        headers: {
+          Authorization: `Bearer ${this.cookies.get('access_token')}`,
+        },
+        observe: 'response',
+      })
+      .pipe(
+        map((response) => {
+          if ([200, 204].includes(response.status)) {
+            return response.body;
+          } else {
+            this.logout();
+            return null;
+          }
+        }),
+      );
+  };
+
+  post = <Res, Req>(endpoint: Endpoint, body: Req) => {
+    if (!this.isAuthenticated()) {
+      this.router.navigate(['/']);
+      return null;
+    }
+    this.refresh();
+
+    return this.http
+      .post<Res>(`${environment.backendUrl}/${endpoint}`, body, {
         headers: {
           Authorization: `Bearer ${this.cookies.get('access_token')}`,
         },

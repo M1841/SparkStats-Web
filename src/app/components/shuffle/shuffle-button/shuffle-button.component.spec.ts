@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ItemMenuComponent } from './item-menu.component';
+import { ShuffleButtonComponent } from './shuffle-button.component';
 
-describe('ItemMenuComponent', () => {
-  let component: ItemMenuComponent;
-  let fixture: ComponentFixture<ItemMenuComponent>;
+describe('ShuffleButtonComponent', () => {
+  let component: ShuffleButtonComponent;
+  let fixture: ComponentFixture<ShuffleButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ItemMenuComponent],
+      imports: [ShuffleButtonComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ItemMenuComponent);
+    fixture = TestBed.createComponent(ShuffleButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

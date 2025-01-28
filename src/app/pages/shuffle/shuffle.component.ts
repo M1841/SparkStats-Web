@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
 import { ApiService } from '@services/api.service';
@@ -14,22 +14,41 @@ import { SectionHeaderComponent } from '../../components/shared/section-header/s
         iconSrc="svg/music-list-dim.svg"
         text="Playlist Shuffler"
       />
-      <app-items-list [items]="playlists" [isLoading]="isLoading()" />
+      <app-items-list
+        [items]="playlists()"
+        [isLoading]="isLoading()"
+        innerComponentKey="shuffle-button"
+        [innerMethod]="shuffle"
+      />
     </main>
   `,
 })
 export class ShuffleComponent implements OnInit {
   constructor(private api: ApiService) {}
 
-  playlists: ItemSimple[] = Array(50);
+  playlists: WritableSignal<ItemSimple[]> = signal(Array(50));
   isLoading = signal(true);
 
   ngOnInit() {
     this.api
       .get<PlaylistSimple[]>(Endpoints.playlist.root)
       ?.subscribe((response) => {
-        this.playlists = response ?? [];
+        this.playlists.set(response ?? []);
         this.isLoading.set(false);
       });
   }
+
+  shuffle = (playlist: PlaylistSimple, isLoading: WritableSignal<boolean>) => {
+    this.api
+      .post<
+        PlaylistSimple,
+        { id: string }
+      >(Endpoints.playlist.shuffle, { id: playlist.id })
+      ?.subscribe((newPlaylist) => {
+        isLoading.set(false);
+        if (newPlaylist) {
+          this.playlists.update((playlists) => [newPlaylist, ...playlists]);
+        }
+      });
+  };
 }

@@ -1,4 +1,4 @@
-import { Component, input, model } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { ItemComponent } from '@components/shared/item/item.component';
 
@@ -12,11 +12,9 @@ import { ItemComponent } from '@components/shared/item/item.component';
           [item]="item"
           [index]="isIndexed() ? $index : null"
           [isLoading]="isLoading()"
-        >
-          @if (innerComponent !== null) {
-            {{ innerComponent() }}
-          }
-        </app-item>
+          [innerComponentKey]="innerComponentKey()"
+          [innerMethod]="innerMethod()"
+        />
       }
     </ul>
   `,
@@ -26,5 +24,6 @@ export class ItemsListComponent {
 
   isIndexed = input<boolean>(false);
   isLoading = input<boolean>(false);
-  innerComponent = input<any>(null);
+  innerComponentKey = input<string>('');
+  innerMethod = input<(arg0: any, arg1: any) => any>();
 }

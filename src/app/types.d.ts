@@ -1,11 +1,14 @@
-type UserProfileSimple = {
-  id: string;
+interface UserProfileBase {
   name: string;
   url: string;
-  pictureUrl?: string;
-};
+}
 
-type TrackSimple = {
+interface UserProfileSimple extends UserProfileBase {
+  id: string;
+  pictureUrl?: string;
+}
+
+interface TrackSimple {
   id: string;
   name: string;
   url?: string;
@@ -13,25 +16,23 @@ type TrackSimple = {
   artists: ArtistBase[];
 };
 
-type ArtistBase = {
+interface ArtistBase {
   name: string;
   url: string;
 };
 
-type ArtistSimple = {
+interface ArtistSimple extends ArtistBase {
   id: string;
-  name: string;
-  url: string;
   pictureUrl?: string;
   genres: string[];
 };
 
-type PlaylistSimple = {
+interface PlaylistSimple {
   id: string;
   name?: string;
   url?: string;
   pictureUrl?: string;
-  owner: UserProfileSimple;
+  owner: UserProfileBase;
   trackCount: number;
 };
 
