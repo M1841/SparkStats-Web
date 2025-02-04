@@ -1,10 +1,10 @@
 import { computed, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { map } from 'rxjs';
 
 import { environment } from '@environments/environment';
-import { Router } from '@angular/router';
 import { Endpoints } from '@utils/constants';
 
 @Injectable({
@@ -50,54 +50,45 @@ export class ApiService {
   };
 
   get = <Res>(endpoint: Endpoint, params: string = '') => {
-    if (!this.isAuthenticated()) {
-      this.router.navigate(['/']);
-      return null;
-    }
-    this.refresh();
-
-    return this.http
-      .get<Res>(`${environment.backendUrl}/${endpoint}${params}`, {
-        headers: {
-          Authorization: `Bearer ${this.cookies.get('access_token')}`,
-        },
-        observe: 'response',
-      })
-      .pipe(
-        map((response) => {
-          if ([200, 204].includes(response.status)) {
-            return response.body;
-          } else {
-            this.logout();
-            return null;
-          }
-        }),
-      );
+    return this.request<Res, null>('GET', endpoint, null, params);
   };
 
   post = <Res, Req>(endpoint: Endpoint, body: Req) => {
+    return this.request<Res, Req>('POST', endpoint, body);
+  };
+
+  request = <Res, Req>(
+    method: 'GET' | 'POST',
+    endpoint: Endpoint,
+    body?: Req,
+    params: string = '',
+  ) => {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/']);
       return null;
     }
     this.refresh();
 
-    return this.http
-      .post<Res>(`${environment.backendUrl}/${endpoint}`, body, {
-        headers: {
-          Authorization: `Bearer ${this.cookies.get('access_token')}`,
-        },
-        observe: 'response',
-      })
-      .pipe(
-        map((response) => {
-          if ([200, 204].includes(response.status)) {
-            return response.body;
-          } else {
-            this.logout();
-            return null;
-          }
-        }),
-      );
+    const url = `${environment.backendUrl}/${endpoint}${params}`;
+    const options = {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.cookies.get('access_token')}`,
+      }),
+      observe: 'response' as const,
+    };
+    const call =
+      method === 'GET'
+        ? this.http.get<Res>(url, options)
+        : this.http.post<Res>(url, body, options);
+    return call.pipe(
+      map((response) => {
+        if ([200, 204].includes(response.status)) {
+          return response.body;
+        } else {
+          this.logout();
+          return null;
+        }
+      }),
+    );
   };
 }
