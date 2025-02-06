@@ -1,29 +1,20 @@
-import { Component, input } from '@angular/core';
-
-import { ItemComponent } from '@components/shared/item/item.component';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, contentChild, input, TemplateRef } from '@angular/core';
 
 @Component({
   selector: 'app-items-list',
-  imports: [ItemComponent],
+  imports: [NgTemplateOutlet],
   template: `
     <ul class="flex flex-col gap-1">
       @for (item of items(); track $index) {
-        <app-item
-          [item]="item"
-          [index]="isIndexed() ? $index : null"
-          [isLoading]="isLoading()"
-          [innerComponentKey]="innerComponentKey()"
-          [innerMethod]="innerMethod()"
+        <ng-container
+          *ngTemplateOutlet="itemTemplate(); context: { $implicit: item }"
         />
       }
     </ul>
   `,
 })
 export class ItemsListComponent {
+  itemTemplate = contentChild.required<TemplateRef<any>>('itemTemplate');
   items = input.required<ItemSimple[]>();
-
-  isIndexed = input<boolean>(false);
-  isLoading = input<boolean>(false);
-  innerComponentKey = input<string>('');
-  innerMethod = input<(arg0: any, arg1: any) => any>();
 }

@@ -1,8 +1,9 @@
 import {
-  afterNextRender,
   Component,
   computed,
   ElementRef,
+  HostListener,
+  inject,
   OnInit,
   signal,
   viewChild,
@@ -26,7 +27,7 @@ import { ApiService } from '@services/api.service';
         <a
           href="/"
           class="
-            font-bold text-lg flex-center gap-1 outline-none focus:underline {{
+            font-bold text-lg flex-center gap-1 outline-none {{
             !isAuthenticated() && 'py-1'
           }}
           "
@@ -89,14 +90,9 @@ import { ApiService } from '@services/api.service';
     </nav>
   `,
 })
-export class NavbarComponent implements OnInit {
-  constructor(private api: ApiService) {
-    afterNextRender(() => {
-      window.addEventListener('keydown', this.handleKeydown);
-      window.addEventListener('click', this.handleClickOutside);
-    });
-  }
-  isAuthenticated = signal(false);
+export class NavbarComponent {
+  private api = inject(ApiService);
+  isAuthenticated = signal(this.api.isAuthenticated());
 
   isShowingMenu = signal(false);
   menuPosition = computed(() =>
@@ -135,6 +131,7 @@ export class NavbarComponent implements OnInit {
     );
   };
 
+  @HostListener('window:keydown', ['$event'])
   handleKeydown = (event: KeyboardEvent) => {
     if (event.key === '`') {
       event.preventDefault();
@@ -162,6 +159,7 @@ export class NavbarComponent implements OnInit {
     }
   };
 
+  @HostListener('window:click', ['$event'])
   handleClickOutside = (event: MouseEvent) => {
     if (
       this.isShowingMenu() &&
@@ -171,8 +169,4 @@ export class NavbarComponent implements OnInit {
       this.toggleMenu();
     }
   };
-
-  ngOnInit() {
-    this.isAuthenticated.set(this.api.isAuthenticated());
-  }
 }

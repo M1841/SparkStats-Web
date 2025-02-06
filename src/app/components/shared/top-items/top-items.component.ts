@@ -1,15 +1,22 @@
-import { Component, input, OnInit, signal } from '@angular/core';
-import { forkJoin, map, of } from 'rxjs';
+import { Component, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { forkJoin, map, of, switchMap, tap } from 'rxjs';
 
+import { ItemComponent } from '@components/shared/item/item.component';
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
 import { RangeSelectComponent } from '@components/shared/range-select/range-select.component';
+import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
-import { SectionHeaderComponent } from '../section-header/section-header.component';
 
 @Component({
   selector: 'app-top-items',
-  imports: [ItemsListComponent, RangeSelectComponent, SectionHeaderComponent],
+  imports: [
+    ItemsListComponent,
+    RangeSelectComponent,
+    SectionHeaderComponent,
+    ItemComponent,
+  ],
   template: `
     <main class="px-8 py-3 flex flex-col gap-3">
       <app-range-select [(selectedRange)]="selectedRange" />
@@ -20,47 +27,39 @@ import { SectionHeaderComponent } from '../section-header/section-header.compone
         />
         @for (range of ranges; track $index) {
           @if (range === selectedRange()) {
-            <app-items-list
-              [items]="topItems[range]"
-              [isLoading]="isLoading()"
-              [isIndexed]="true"
-            />
+            <app-items-list [items]="topItems$()[range]">
+              <ng-template #itemTemplate let-item>
+                <app-item [item]="item" [isLoading]="isLoading()" />
+              </ng-template>
+            </app-items-list>
           }
         }
       </section>
     </main>
   `,
 })
-export class TopItemsComponent implements OnInit {
-  constructor(private api: ApiService) {}
+export class TopItemsComponent {
+  private api = inject(ApiService);
+  isLoading = signal(true);
 
   topItems: ItemSimple[][] = [Array(50), Array(50), Array(50)];
   ranges = [0, 1, 2];
   selectedRange = signal(0);
-  isLoading = signal(true);
 
   sectionHeader = input.required<{ iconSrc: string; text: string }>();
-
   endpoint = input<'track/top' | 'artist/top'>(Endpoints.track.top);
 
-  ngOnInit() {
-    const requests = this.ranges.map((range) => {
-      const result = this.api.get<ItemSimple[]>(
-        this.endpoint(),
-        `?range=${range}`,
+  fetchItems$ = of(this.ranges).pipe(
+    switchMap((ranges) => {
+      const requests = ranges.map((range) =>
+        this.api
+          .get<ItemSimple[]>(this.endpoint(), `?range=${range}`)
+          .pipe(map((response) => response ?? [])),
       );
-      return (
-        result?.pipe(
-          map((response) => {
-            return response ?? [];
-          }),
-        ) ?? of([])
-      );
-    });
-
-    forkJoin(requests).subscribe((responses) => {
-      this.topItems = responses;
-      this.isLoading.set(false);
-    });
-  }
+      return forkJoin(requests).pipe(tap(() => this.isLoading.set(false)));
+    }),
+  );
+  topItems$ = toSignal(this.fetchItems$, {
+    initialValue: [Array(100), Array(10), Array(10)],
+  });
 }

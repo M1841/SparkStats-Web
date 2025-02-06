@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 
 import { UserProfileComponent } from '@components/home/user-profile/user-profile.component';
 import { CurrentlyPlayingComponent } from '@components/home/currently-playing/currently-playing.component';
@@ -36,12 +36,7 @@ import { ApiService } from '@services/api.service';
     }
   `,
 })
-export class HomeComponent implements OnInit {
-  constructor(private api: ApiService) {}
-
-  isAuthenticated = false;
-
-  ngOnInit() {
-    this.isAuthenticated = this.api.isAuthenticated();
-  }
+export class HomeComponent {
+  private api = inject(ApiService);
+  isAuthenticated = this.api.isAuthenticated();
 }

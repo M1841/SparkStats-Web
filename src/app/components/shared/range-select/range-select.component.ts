@@ -1,4 +1,5 @@
-import { afterNextRender, Component, model } from '@angular/core';
+import { Component, HostListener, model } from '@angular/core';
+
 import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
 
 @Component({
@@ -30,11 +31,6 @@ import { SectionHeaderComponent } from '@components/shared/section-header/sectio
   </section> `,
 })
 export class RangeSelectComponent {
-  constructor() {
-    afterNextRender(() => {
-      window.addEventListener('keydown', this.handleKeydown);
-    });
-  }
   selectedRange = model(0);
 
   ranges = [
@@ -56,6 +52,7 @@ export class RangeSelectComponent {
     this.selectedRange.set(range);
   };
 
+  @HostListener('window:keydown', ['$event'])
   handleKeydown = (event: KeyboardEvent) => {
     if ([1, 2, 3].includes(parseInt(event.key))) {
       event.preventDefault();

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { ApiService } from '@services/api.service';
 
@@ -14,7 +14,7 @@ import { ApiService } from '@services/api.service';
   </button>`,
 })
 export class LogoutButtonComponent {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   logout = () => {
     this.api.logout();

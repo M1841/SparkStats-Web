@@ -1,4 +1,5 @@
 import { Component, input, signal, WritableSignal } from '@angular/core';
+import { Observable, Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-shuffle-button',
@@ -7,7 +8,7 @@ import { Component, input, signal, WritableSignal } from '@angular/core';
     <button
       (click)="handleClick()"
       [class]="
-        'relative p-[0.58rem] rounded-full bg-primary-dark ' +
+        'relative p-[0.58rem] rounded-full bg-primary-dark outline-none ' +
         (!isLoading() && 'hover:bg-primary-medium focus:bg-primary-medium')
       "
       [disabled]="isLoading()"
@@ -32,15 +33,11 @@ import { Component, input, signal, WritableSignal } from '@angular/core';
 })
 export class ShuffleButtonComponent {
   playlist = input.required<PlaylistSimple>();
-  shuffle =
-    input.required<
-      (playlist: PlaylistSimple, isLoading: WritableSignal<boolean>) => void
-    >();
-
-  isLoading = signal(false);
+  shuffle = input.required<(id: string) => void>();
+  isLoading = signal<boolean>(false);
 
   handleClick = () => {
     this.isLoading.set(true);
-    this.shuffle()(this.playlist(), this.isLoading);
+    this.shuffle()(this.playlist().id);
   };
 }

@@ -1,10 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 
-import { ShuffleButtonComponent } from '@components/shuffle/shuffle-button/shuffle-button.component';
-
 @Component({
   selector: 'app-item',
-  imports: [ShuffleButtonComponent],
+  imports: [],
   template: `
     <li
       #itemRef
@@ -96,19 +94,7 @@ import { ShuffleButtonComponent } from '@components/shuffle/shuffle-button/shuff
         </main>
       </section>
 
-      @switch (true) {
-        @case (
-          !isLoading() &&
-          isPlaylist() &&
-          innerComponentKey() === 'shuffle-button' &&
-          innerMethod() !== undefined
-        ) {
-          <app-shuffle-button
-            [playlist]="itemAsPlaylist()"
-            [shuffle]="innerMethod()!"
-          />
-        }
-      }
+      <ng-content select="[actions]" />
     </li>
   `,
 })
@@ -146,7 +132,4 @@ export class ItemComponent {
         return '';
     }
   });
-
-  innerComponentKey = input<string>('');
-  innerMethod = input<(arg0: any, arg1: any) => any>();
 }

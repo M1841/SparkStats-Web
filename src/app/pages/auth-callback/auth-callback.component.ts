@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -8,10 +8,8 @@ import { CookieService } from 'ngx-cookie-service';
   template: '',
 })
 export class AuthCallbackComponent implements OnInit {
-  constructor(
-    private route: ActivatedRoute,
-    private cookies: CookieService,
-  ) {}
+  private route = inject(ActivatedRoute);
+  private cookies = inject(CookieService);
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {

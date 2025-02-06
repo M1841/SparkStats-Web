@@ -2,7 +2,7 @@ import { computed, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { map } from 'rxjs';
+import { map, of } from 'rxjs';
 
 import { environment } from '@environments/environment';
 import { Endpoints } from '@utils/constants';
@@ -65,7 +65,7 @@ export class ApiService {
   ) => {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/']);
-      return null;
+      return of(null);
     }
     this.refresh();
 
@@ -82,9 +82,10 @@ export class ApiService {
         : this.http.post<Res>(url, body, options);
     return call.pipe(
       map((response) => {
-        if ([200, 204].includes(response.status)) {
+        if (response.ok) {
           return response.body;
         } else {
+          console.error(`${response.status} Error: ${response.body}`);
           this.logout();
           return null;
         }

@@ -1,30 +1,30 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
-import { ApiService } from '@services/api.service';
-import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
-import { Endpoints } from '@utils/constants';
 import { ItemComponent } from '@components/shared/item/item.component';
+import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
+import { ApiService } from '@services/api.service';
+import { Endpoints } from '@utils/constants';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
   imports: [ItemComponent, SectionHeaderComponent],
-  template: ` <section class="flex flex-col gap-1">
-    <app-section-header iconSrc="svg/user-dim.svg" text="Your Profile" />
-    <app-item [item]="profile" [isLoading]="isLoading()" />
-  </section>`,
+  template: `
+    <section class="flex flex-col gap-1">
+      <app-section-header iconSrc="svg/user-dim.svg" text="Your Profile" />
+      <app-item [item]="profile$()" [isLoading]="isLoading()" />
+    </section>
+  `,
 })
-export class UserProfileComponent implements OnInit {
-  constructor(private api: ApiService) {}
-
-  profile: UserProfileSimple | null = null;
+export class UserProfileComponent {
+  private api = inject(ApiService);
   isLoading = signal(true);
 
-  ngOnInit() {
-    this.api
-      .get<UserProfileSimple>(Endpoints.user.profile)
-      ?.subscribe((response) => {
-        this.profile = response;
-        this.isLoading.set(false);
-      });
-  }
+  fetchProfile$ = this.api
+    .get<UserProfileSimple>(Endpoints.user.profile)
+    .pipe(tap(() => this.isLoading.set(false)));
+  profile$ = toSignal(this.fetchProfile$, {
+    initialValue: null,
+  });
 }
