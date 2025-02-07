@@ -1,10 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
 import { ApiService } from '@services/api.service';
@@ -12,15 +6,7 @@ import { Endpoints } from '@utils/constants';
 import { SectionHeaderComponent } from '../../components/shared/section-header/section-header.component';
 import { ItemComponent } from '@components/shared/item/item.component';
 import { ShuffleButtonComponent } from '@components/shuffle/shuffle-button/shuffle-button.component';
-import {
-  ignoreElements,
-  map,
-  startWith,
-  Subject,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs';
+import { map, startWith, Subject, switchMap, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -57,35 +43,40 @@ export class ShuffleComponent {
   private api = inject(ApiService);
   isLoading = signal(true);
 
-  refreshSubject = new Subject<string>();
+  refreshSubject = new Subject<{
+    id: string;
+    isButtonLoading: WritableSignal<boolean>;
+  }>();
+  shufflePlaylist$ = this.refreshSubject.pipe(
+    switchMap(({ id, isButtonLoading }) => {
+      return this.api
+        .post<
+          PlaylistSimple,
+          { id: string }
+        >(Endpoints.playlist.shuffle, { id: id })
+        .pipe(tap(() => isButtonLoading.set(false)));
+    }),
+  );
 
   fetchPlaylists$ = this.api
     .get<PlaylistSimple[]>(Endpoints.playlist.root)
-    .pipe(tap(() => this.isLoading.set(false)));
-  shufflePlaylist$ = this.refreshSubject.pipe(
-    switchMap((id) => {
-      return this.api.post<PlaylistSimple, { id: string }>(
-        Endpoints.playlist.shuffle,
-        { id: id },
-      );
-    }),
-  );
-  allPlaylists$ = this.fetchPlaylists$.pipe(
-    switchMap((initialPlaylists) =>
-      this.shufflePlaylist$.pipe(
-        startWith([]),
-        map((newPlaylist) => {
-          if (Array.isArray(newPlaylist)) {
-            return initialPlaylists;
-          }
-          return [newPlaylist, ...(initialPlaylists ?? [])];
-        }),
+    .pipe(
+      tap(() => this.isLoading.set(false)),
+      switchMap((initialPlaylists) =>
+        this.shufflePlaylist$.pipe(
+          startWith([]),
+          map((newPlaylist) => {
+            if (Array.isArray(newPlaylist)) {
+              return initialPlaylists;
+            }
+            return [newPlaylist, ...(initialPlaylists ?? [])];
+          }),
+        ),
       ),
-    ),
-  );
-  playlists$ = toSignal(this.allPlaylists$, { initialValue: Array(50) });
+    );
+  playlists$ = toSignal(this.fetchPlaylists$, { initialValue: Array(50) });
 
-  shuffle = (id: string) => {
-    this.refreshSubject.next(id);
+  shuffle = (id: string, isButtonLoading: WritableSignal<boolean>) => {
+    this.refreshSubject.next({ id, isButtonLoading });
   };
 }

@@ -1,5 +1,4 @@
 import { Component, input, signal, WritableSignal } from '@angular/core';
-import { Observable, Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-shuffle-button',
@@ -33,11 +32,14 @@ import { Observable, Subscription, tap } from 'rxjs';
 })
 export class ShuffleButtonComponent {
   playlist = input.required<PlaylistSimple>();
-  shuffle = input.required<(id: string) => void>();
+  shuffle =
+    input.required<
+      (id: string, isButtonLoading: WritableSignal<boolean>) => void
+    >();
   isLoading = signal<boolean>(false);
 
   handleClick = () => {
     this.isLoading.set(true);
-    this.shuffle()(this.playlist().id);
+    this.shuffle()(this.playlist().id, this.isLoading);
   };
 }
