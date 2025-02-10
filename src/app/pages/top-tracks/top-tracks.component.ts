@@ -17,5 +17,5 @@ import { Endpoints } from '@utils/constants';
   `,
 })
 export class TopTracksComponent {
-  endpoint = Endpoints.track.top;
+  readonly endpoint = Endpoints.track.top;
 }

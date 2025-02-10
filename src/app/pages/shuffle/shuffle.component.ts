@@ -1,13 +1,14 @@
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { mergeMap, scan, startWith, Subject, tap } from 'rxjs';
 
+import { ItemComponent } from '@components/shared/item/item.component';
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
+import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
+import { ShuffleButtonComponent } from '@components/shuffle/shuffle-button/shuffle-button.component';
 import { ApiService } from '@services/api.service';
 import { Endpoints } from '@utils/constants';
-import { SectionHeaderComponent } from '../../components/shared/section-header/section-header.component';
-import { ItemComponent } from '@components/shared/item/item.component';
-import { ShuffleButtonComponent } from '@components/shuffle/shuffle-button/shuffle-button.component';
-import { map, startWith, Subject, switchMap, tap } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { __values } from 'tslib';
 
 @Component({
   selector: 'app-shuffle',
@@ -23,7 +24,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
         iconSrc="svg/music-list-dim.svg"
         text="Playlist Shuffler"
       />
-      <app-items-list [items]="playlists$() ?? []">
+      <app-items-list [items]="playlists()">
         <ng-template #itemTemplate let-playlist>
           <app-item [item]="playlist" [isLoading]="isLoading()">
             @if (!isLoading()) {
@@ -31,6 +32,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
                 actions
                 [playlist]="playlist"
                 [shuffle]="shuffle"
+                [isLoading]="isButtonLoading()[playlist.id]"
               />
             }
           </app-item>
@@ -40,43 +42,50 @@ import { toSignal } from '@angular/core/rxjs-interop';
   `,
 })
 export class ShuffleComponent {
-  private api = inject(ApiService);
-  isLoading = signal(true);
+  private readonly api = inject(ApiService);
+  private readonly refreshSubject = new Subject<string>();
 
-  refreshSubject = new Subject<{
-    id: string;
-    isButtonLoading: WritableSignal<boolean>;
-  }>();
-  shufflePlaylist$ = this.refreshSubject.pipe(
-    switchMap(({ id, isButtonLoading }) => {
-      return this.api
+  private readonly shufflePlaylist$ = this.refreshSubject.pipe(
+    tap((id) =>
+      this.isButtonLoading.update((value) => ({ ...value, [id]: true })),
+    ),
+    mergeMap((id) =>
+      this.api
         .post<
           PlaylistSimple,
           { id: string }
-        >(Endpoints.playlist.shuffle, { id: id })
-        .pipe(tap(() => isButtonLoading.set(false)));
-    }),
+        >(Endpoints.playlist.shuffle, { id })
+        .pipe(
+          tap(() =>
+            this.isButtonLoading.update((value) => ({ ...value, [id]: false })),
+          ),
+        ),
+    ),
   );
-
-  fetchPlaylists$ = this.api
+  private readonly fetchPlaylists$ = this.api
     .get<PlaylistSimple[]>(Endpoints.playlist.root)
     .pipe(
       tap(() => this.isLoading.set(false)),
-      switchMap((initialPlaylists) =>
+      mergeMap((initialPlaylists) =>
         this.shufflePlaylist$.pipe(
-          startWith([]),
-          map((newPlaylist) => {
-            if (Array.isArray(newPlaylist)) {
-              return initialPlaylists;
+          startWith(null),
+          scan((acc, newPlaylist) => {
+            if (newPlaylist === null) {
+              return initialPlaylists ?? [];
             }
-            return [newPlaylist, ...(initialPlaylists ?? [])];
-          }),
+            return [newPlaylist, ...acc];
+          }, initialPlaylists ?? []),
         ),
       ),
     );
-  playlists$ = toSignal(this.fetchPlaylists$, { initialValue: Array(50) });
 
-  shuffle = (id: string, isButtonLoading: WritableSignal<boolean>) => {
-    this.refreshSubject.next({ id, isButtonLoading });
+  shuffle = (id: string) => {
+    this.refreshSubject.next(id);
   };
+
+  readonly playlists = toSignal(this.fetchPlaylists$, {
+    initialValue: Array(50),
+  });
+  readonly isLoading = signal(true);
+  readonly isButtonLoading = signal<{ [id: string]: boolean }>({});
 }

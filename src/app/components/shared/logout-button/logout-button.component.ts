@@ -15,9 +15,8 @@ import { ApiService } from '@services/api.service';
 })
 export class LogoutButtonComponent {
   private api = inject(ApiService);
-
-  logout = () => {
+  logout() {
     this.api.logout();
     window.location.reload();
-  };
+  }
 }

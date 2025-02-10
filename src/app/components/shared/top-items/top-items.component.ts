@@ -1,5 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { forkJoin, map, of, switchMap, tap } from 'rxjs';
 
 import { ItemComponent } from '@components/shared/item/item.component';
@@ -7,7 +6,6 @@ import { ItemsListComponent } from '@components/shared/items-list/items-list.com
 import { RangeSelectComponent } from '@components/shared/range-select/range-select.component';
 import { SectionHeaderComponent } from '@components/shared/section-header/section-header.component';
 import { ApiService } from '@services/api.service';
-import { Endpoints } from '@utils/constants';
 
 @Component({
   selector: 'app-top-items',
@@ -27,7 +25,7 @@ import { Endpoints } from '@utils/constants';
         />
         @for (range of ranges; track $index) {
           @if (range === selectedRange()) {
-            <app-items-list [items]="topItems$()[range]">
+            <app-items-list [items]="topItems()[range]">
               <ng-template #itemTemplate let-item>
                 <app-item [item]="item" [isLoading]="isLoading()" />
               </ng-template>
@@ -38,18 +36,15 @@ import { Endpoints } from '@utils/constants';
     </main>
   `,
 })
-export class TopItemsComponent {
-  private api = inject(ApiService);
-  isLoading = signal(true);
+export class TopItemsComponent implements OnInit {
+  readonly ranges = [0, 1, 2];
+  readonly selectedRange = signal(0);
 
-  topItems: ItemSimple[][] = [Array(50), Array(50), Array(50)];
-  ranges = [0, 1, 2];
-  selectedRange = signal(0);
+  readonly sectionHeader = input.required<{ iconSrc: string; text: string }>();
+  readonly endpoint = input.required<'track/top' | 'artist/top'>();
 
-  sectionHeader = input.required<{ iconSrc: string; text: string }>();
-  endpoint = input<'track/top' | 'artist/top'>(Endpoints.track.top);
-
-  fetchItems$ = of(this.ranges).pipe(
+  private readonly api = inject(ApiService);
+  private readonly fetchItems$ = of(this.ranges).pipe(
     switchMap((ranges) => {
       const requests = ranges.map((range) =>
         this.api
@@ -59,7 +54,15 @@ export class TopItemsComponent {
       return forkJoin(requests).pipe(tap(() => this.isLoading.set(false)));
     }),
   );
-  topItems$ = toSignal(this.fetchItems$, {
-    initialValue: [Array(100), Array(10), Array(10)],
-  });
+
+  readonly topItems = signal<ItemSimple[][]>([
+    Array(100),
+    Array(100),
+    Array(100),
+  ]);
+  readonly isLoading = signal(true);
+
+  ngOnInit() {
+    this.fetchItems$.subscribe((response) => this.topItems.set(response));
+  }
 }

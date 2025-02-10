@@ -10,12 +10,12 @@ import { SectionHeaderComponent } from '@components/shared/section-header/sectio
     <div class="flex gap-1 -mx-2">
       @for (range of ranges; track range.value) {
         <label
-          [class]="
-            'border-[1px] rounded-md p-2 w-1/3 text-[0.8rem] flex-center cursor-pointer ' +
-            (selectedRange() === range.value
+          class="
+            border-[1px] rounded-md p-2 w-1/3 text-[0.8rem] flex-center cursor-pointer {{
+            selectedRange() === range.value
               ? 'border-primary-dark text-primary-light bg-primary-dark hover:border-primary-medium hover:bg-primary-medium'
-              : 'border-medium text-light-dim hover:bg-dark-dim')
-          "
+              : 'border-medium text-light-dim hover:bg-dark-dim'
+          }}"
         >
           {{ range.name }}
           <input
@@ -31,9 +31,7 @@ import { SectionHeaderComponent } from '@components/shared/section-header/sectio
   </section> `,
 })
 export class RangeSelectComponent {
-  selectedRange = model(0);
-
-  ranges = [
+  readonly ranges = [
     {
       value: 0,
       name: '4 Weeks',
@@ -47,16 +45,17 @@ export class RangeSelectComponent {
       name: '1 Year',
     },
   ];
+  readonly selectedRange = model(0);
 
-  toggleRange = (range: number) => {
+  toggleRange(range: number) {
     this.selectedRange.set(range);
-  };
+  }
 
   @HostListener('window:keydown', ['$event'])
-  handleKeydown = (event: KeyboardEvent) => {
+  handleKeydown(event: KeyboardEvent) {
     if ([1, 2, 3].includes(parseInt(event.key))) {
       event.preventDefault();
       this.selectedRange.set(parseInt(event.key) - 1);
     }
-  };
+  }
 }

@@ -11,6 +11,6 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class SectionHeaderComponent {
-  iconSrc = input.required<string>();
-  text = input.required<string>();
+  readonly iconSrc = input.required<string>();
+  readonly text = input.required<string>();
 }

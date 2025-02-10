@@ -23,7 +23,7 @@ import { Component, computed, input } from '@angular/core';
               'h-12 w-12 rounded-sm bg-dark-dim object-cover aspect-square {{
               item()?.pictureUrl ? '' : 'p-3'
             }}"
-            src="{{ item()?.pictureUrl ?? altIconSrc() }}"
+            [src]="item()?.pictureUrl ?? altIconSrc()"
             alt=""
           />
         }
@@ -34,14 +34,12 @@ import { Component, computed, input } from '@angular/core';
             ></span>
           } @else {
             <a
-              href="{{ item()?.url ?? '' }}"
-              class="text-sm
-                {{
+              [href]="item()?.url ?? ''"
+              class="text-sm {{
                 item()?.url
                   ? 'hover:underline focus:underline outline-none'
                   : 'text-light-dim pointer-events-none'
-              }}
-              "
+              }}"
               target="_blank"
             >
               {{ item()?.name }}
@@ -57,7 +55,7 @@ import { Component, computed, input } from '@angular/core';
                   @for (artist of itemAsTrack().artists; track $index) {
                     @if (artist.url) {
                       <a
-                        href="{{ artist.url }}"
+                        [href]="artist.url"
                         class="hover:underline focus:underline outline-none"
                         target="_blank"
                         >{{ artist.name }}</a
@@ -78,7 +76,7 @@ import { Component, computed, input } from '@angular/core';
               @case (isPlaylist()) {
                 <p class="text-[0.8rem] text-light-dim">
                   <a
-                    href="{{ itemAsPlaylist().owner.url }}"
+                    [href]="itemAsPlaylist().owner.url"
                     class="hover:underline focus:underline outline-none"
                     target="_blank"
                     >{{ itemAsPlaylist().owner.name }}</a
@@ -99,26 +97,25 @@ import { Component, computed, input } from '@angular/core';
   `,
 })
 export class ItemComponent {
-  item = input<ItemSimple | null>(null);
-  index = input<number | null>(null);
-  isLoading = input<boolean>(false);
+  readonly item = input<ItemSimple | null>(null);
+  readonly index = input<number | null>(null);
+  readonly isLoading = input<boolean>(false);
 
-  itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
-  itemAsTrack = computed(() => this.item() as TrackSimple);
-  itemAsArtist = computed(() => this.item() as ArtistSimple);
-  itemAsPlaylist = computed(() => this.item() as PlaylistSimple);
+  readonly itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
+  readonly itemAsTrack = computed(() => this.item() as TrackSimple);
+  readonly itemAsArtist = computed(() => this.item() as ArtistSimple);
+  readonly itemAsPlaylist = computed(() => this.item() as PlaylistSimple);
 
-  isTrack = computed(() => this.itemAsTrack().artists !== undefined);
-  isArtist = computed(() => this.itemAsArtist().genres !== undefined);
-  isPlaylist = computed(() => this.itemAsPlaylist().trackCount !== undefined);
-  isUserProfile = computed(
+  readonly isTrack = computed(() => this.itemAsTrack().artists !== undefined);
+  readonly isArtist = computed(() => this.itemAsArtist().genres !== undefined);
+  readonly isPlaylist = computed(
+    () => this.itemAsPlaylist().trackCount !== undefined,
+  );
+  readonly isUserProfile = computed(
     () => !this.isTrack() && !this.isArtist() && !this.isPlaylist(),
   );
 
-  separator = (index: number, count: number) =>
-    index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
-
-  altIconSrc = computed(() => {
+  readonly altIconSrc = computed(() => {
     switch (true) {
       case this.isTrack():
         return 'svg/music-dim.svg';
@@ -132,4 +129,8 @@ export class ItemComponent {
         return '';
     }
   });
+
+  separator(index: number, count: number) {
+    return index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
+  }
 }

@@ -2,12 +2,15 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
+import { ApiService } from '@services/api.service';
+
 @Component({
   selector: 'app-auth-callback',
   imports: [],
   template: '',
 })
 export class AuthCallbackComponent implements OnInit {
+  private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   private cookies = inject(CookieService);
 

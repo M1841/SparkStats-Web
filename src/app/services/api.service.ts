@@ -1,4 +1,4 @@
-import { computed, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -11,15 +11,13 @@ import { Endpoints } from '@utils/constants';
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(
-    private cookies: CookieService,
-    private http: HttpClient,
-    private router: Router,
-  ) {}
+  private readonly cookies = inject(CookieService);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  isAuthenticated = computed(() => !!this.cookies.get('access_token'));
+  readonly isAuthenticated = computed(() => !!this.cookies.get('access_token'));
 
-  refresh = () => {
+  private readonly refresh = () => {
     const expiresAt = parseInt(this.cookies.get('expires_at'));
 
     if (expiresAt <= Date.now()) {
@@ -44,25 +42,25 @@ export class ApiService {
     }
   };
 
-  logout = () => {
+  logout() {
     this.cookies.deleteAll();
     this.router.navigate(['/']);
-  };
+  }
 
-  get = <Res>(endpoint: Endpoint, params: string = '') => {
+  get<Res>(endpoint: Endpoint, params: string = '') {
     return this.request<Res, null>('GET', endpoint, null, params);
-  };
+  }
 
-  post = <Res, Req>(endpoint: Endpoint, body: Req) => {
+  post<Res, Req>(endpoint: Endpoint, body: Req) {
     return this.request<Res, Req>('POST', endpoint, body);
-  };
+  }
 
-  request = <Res, Req>(
+  private request<Res, Req>(
     method: 'GET' | 'POST',
     endpoint: Endpoint,
     body?: Req,
     params: string = '',
-  ) => {
+  ) {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/']);
       return of(null);
@@ -80,6 +78,7 @@ export class ApiService {
       method === 'GET'
         ? this.http.get<Res>(url, options)
         : this.http.post<Res>(url, body, options);
+
     return call.pipe(
       map((response) => {
         if (response.ok) {
@@ -91,5 +90,5 @@ export class ApiService {
         }
       }),
     );
-  };
+  }
 }

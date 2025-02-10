@@ -1,5 +1,5 @@
-import { NgTemplateOutlet } from '@angular/common';
 import { Component, contentChild, input, TemplateRef } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-items-list',
@@ -15,6 +15,7 @@ import { Component, contentChild, input, TemplateRef } from '@angular/core';
   `,
 })
 export class ItemsListComponent {
-  itemTemplate = contentChild.required<TemplateRef<any>>('itemTemplate');
-  items = input.required<ItemSimple[]>();
+  readonly itemTemplate =
+    contentChild.required<TemplateRef<any>>('itemTemplate');
+  readonly items = input.required<ItemSimple[]>();
 }

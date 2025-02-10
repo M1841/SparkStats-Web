@@ -4,7 +4,6 @@ import {
   ElementRef,
   HostListener,
   inject,
-  OnInit,
   signal,
   viewChild,
 } from '@angular/core';
@@ -20,7 +19,7 @@ import { ApiService } from '@services/api.service';
       <header
         class="
           py-2 px-8 border-b-medium border-b-[1px] flex bg-dark {{
-          isAuthenticated() ? 'justify-between' : 'justify-center'
+          isAuthenticated ? 'justify-between' : 'justify-center'
         }}
         "
       >
@@ -28,14 +27,14 @@ import { ApiService } from '@services/api.service';
           href="/"
           class="
             font-bold text-lg flex-center gap-1 outline-none {{
-            !isAuthenticated() && 'py-1'
+            !isAuthenticated && 'py-1'
           }}
           "
         >
           <img src="svg/spark.svg" width="20" height="20" />
           SparkStats
         </a>
-        @if (isAuthenticated()) {
+        @if (isAuthenticated) {
           <button
             #toggleButton
             (click)="toggleMenu()"
@@ -45,30 +44,29 @@ import { ApiService } from '@services/api.service';
               src="svg/menu-dim.svg"
               width="20"
               height="20"
-              [class]="
-                'transition-all duration-200 ' + (isShowingMenu() && 'scale-0')
-              "
+              class="transition-all duration-200 {{
+                isShowingMenu() && 'scale-0'
+              }}"
             />
             <img
               src="svg/close-dim.svg"
               width="20"
               height="20"
-              [class]="
-                'transition-all duration-200 absolute top-2 ' +
-                (!isShowingMenu() && 'scale-0')
-              "
+              class="
+                transition-all duration-200 absolute top-2 {{
+                !isShowingMenu() && 'scale-0'
+              }}"
             />
           </button>
         }
       </header>
-      @if (isAuthenticated()) {
+      @if (isAuthenticated) {
         <aside
           #menu
-          [class]="
-            'absolute w-48 border-l-medium border-l-[1px] transition-[right] duration-200 bg-dark flex flex-col justify-between ' +
-            menuPosition() +
-            menuScale()
-          "
+          class="
+            absolute w-48 border-l-medium border-l-[1px] transition-[right] duration-200 bg-dark flex flex-col justify-between {{
+            menuPosition() + menuScale()
+          }}"
           [style.height]="'calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem)'"
         >
           <section class="p-2 flex flex-col gap-1">
@@ -91,16 +89,16 @@ import { ApiService } from '@services/api.service';
   `,
 })
 export class NavbarComponent {
-  private api = inject(ApiService);
-  isAuthenticated = signal(this.api.isAuthenticated());
+  private readonly api = inject(ApiService);
+  readonly isAuthenticated = this.api.isAuthenticated();
 
-  isShowingMenu = signal(false);
-  menuPosition = computed(() =>
+  readonly isShowingMenu = signal(false);
+  readonly menuPosition = computed(() =>
     this.isShowingMenu() ? 'right-0 ' : '-right-48 ',
   );
-  menuScale = signal('scale-x-0');
+  readonly menuScale = signal('scale-x-0');
 
-  navItems = [
+  readonly navItems = [
     {
       iconSrc: 'svg/music.svg',
       name: 'Top Tracks',
@@ -118,10 +116,10 @@ export class NavbarComponent {
     },
   ];
 
-  menu = viewChild.required<ElementRef>('menu');
+  private readonly menu = viewChild.required<ElementRef>('menu');
   toggleButton = viewChild.required<ElementRef>('toggleButton');
 
-  toggleMenu = () => {
+  toggleMenu() {
     this.isShowingMenu.update((state) => !state);
     setTimeout(
       () => {
@@ -129,10 +127,10 @@ export class NavbarComponent {
       },
       this.isShowingMenu() ? 0 : 200,
     );
-  };
+  }
 
   @HostListener('window:keydown', ['$event'])
-  handleKeydown = (event: KeyboardEvent) => {
+  handleKeydown(event: KeyboardEvent) {
     if (event.key === '`') {
       event.preventDefault();
       this.toggleMenu();
@@ -157,10 +155,10 @@ export class NavbarComponent {
         }
       }, 10);
     }
-  };
+  }
 
   @HostListener('window:click', ['$event'])
-  handleClickOutside = (event: MouseEvent) => {
+  handleClickOutside(event: MouseEvent) {
     if (
       this.isShowingMenu() &&
       !this.menu().nativeElement.contains(event.target as Node) &&
@@ -168,5 +166,5 @@ export class NavbarComponent {
     ) {
       this.toggleMenu();
     }
-  };
+  }
 }

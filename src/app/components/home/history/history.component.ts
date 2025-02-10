@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { ApplicationRef, Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, tap, timer } from 'rxjs';
+import { first, map, switchMap, tap, timer } from 'rxjs';
 
 import { ItemComponent } from '@components/shared/item/item.component';
 import { ItemsListComponent } from '@components/shared/items-list/items-list.component';
@@ -14,7 +14,7 @@ import { Endpoints } from '@utils/constants';
   template: `
     <section class="flex flex-col gap-1">
       <app-section-header iconSrc="svg/history-dim.svg" text="History" />
-      <app-items-list [items]="history$() ?? []">
+      <app-items-list [items]="history()">
         <ng-template #itemTemplate let-item>
           <app-item [item]="item" [isLoading]="isLoading()" />
         </ng-template>
@@ -23,14 +23,19 @@ import { Endpoints } from '@utils/constants';
   `,
 })
 export class HistoryComponent {
-  private api = inject(ApiService);
-  isLoading = signal(true);
+  private readonly api = inject(ApiService);
+  private readonly appRef = inject(ApplicationRef);
 
-  fetchHistory$ = timer(0, 30 * 1000).pipe(
+  private readonly fetchHistory$ = this.appRef.isStable.pipe(
+    first((isStable) => isStable),
+    switchMap(() => timer(0, 30 * 1000)),
     switchMap(() => this.api.get<TrackSimple[]>(Endpoints.track.history)),
+    map((history) => history ?? []),
     tap(() => this.isLoading.set(false)),
   );
-  history$ = toSignal(this.fetchHistory$, {
+
+  readonly history = toSignal(this.fetchHistory$, {
     initialValue: Array(50),
   });
+  readonly isLoading = signal(true);
 }
