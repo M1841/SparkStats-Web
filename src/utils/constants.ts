@@ -6,6 +6,9 @@ export const Endpoints = {
     login: 'auth/login',
     refresh: 'auth/refresh',
   },
+  genre: {
+    top: 'genre/top',
+  },
   track: {
     current: 'track/current',
     history: 'track/history',

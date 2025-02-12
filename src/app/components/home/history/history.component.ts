@@ -16,7 +16,11 @@ import { Endpoints } from '@utils/constants';
       <app-section-header iconSrc="svg/history-dim.svg" text="History" />
       <app-items-list [items]="history()">
         <ng-template #itemTemplate let-item>
-          <app-item [item]="item" [isLoading]="isLoading()" />
+          <app-item
+            [item]="item"
+            [isLoading]="isLoading()"
+            altIconSrc="svg/music-dim.svg"
+          />
         </ng-template>
       </app-items-list>
     </section>

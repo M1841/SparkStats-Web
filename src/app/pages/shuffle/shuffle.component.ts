@@ -26,7 +26,11 @@ import { __values } from 'tslib';
       />
       <app-items-list [items]="playlists()">
         <ng-template #itemTemplate let-playlist>
-          <app-item [item]="playlist" [isLoading]="isLoading()">
+          <app-item
+            [item]="playlist"
+            [isLoading]="isLoading()"
+            altIconSrc="svg/music-list-dim.svg"
+          >
             @if (!isLoading()) {
               <app-shuffle-button
                 actions

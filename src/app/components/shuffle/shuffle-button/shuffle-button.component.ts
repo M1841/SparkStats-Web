@@ -9,7 +9,7 @@ import { Component, input } from '@angular/core';
       class="
         relative p-[0.58rem] rounded-full bg-primary-dark outline-none {{
         !isLoading() && 'hover:bg-primary-medium focus:bg-primary-medium'
-      }}"
+      }} aspect-square"
       [disabled]="isLoading()"
     >
       <img

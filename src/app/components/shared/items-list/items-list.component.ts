@@ -8,7 +8,10 @@ import { NgTemplateOutlet } from '@angular/common';
     <ul class="flex flex-col gap-1">
       @for (item of items(); track $index) {
         <ng-container
-          *ngTemplateOutlet="itemTemplate(); context: { $implicit: item }"
+          *ngTemplateOutlet="
+            itemTemplate();
+            context: { $implicit: item, index: $index }
+          "
         />
       }
     </ul>

@@ -8,7 +8,7 @@ import { Component, computed, input } from '@angular/core';
       #itemRef
       class="flex items-center justify-between border-medium border-[1px] rounded-md p-2 -mx-2"
     >
-      <section class="flex gap-2 items-center">
+      <section class="flex gap-2 items-center w-full min-h-12">
         @if (index() !== null) {
           <span class="text-[0.8rem] text-light-dim w-5 text-center">{{
             index()! + 1
@@ -16,39 +16,53 @@ import { Component, computed, input } from '@angular/core';
         }
 
         @if (isLoading()) {
-          <span class="h-12 w-12 rounded-sm bg-dark-dim animate-pulse"></span>
+          <span
+            class="h-12 w-12 aspect-square rounded-sm bg-dark-dim animate-pulse"
+          ></span>
         } @else {
-          <img
-            class="
+          @if (!isGenre()) {
+            <img
+              class="
               'h-12 w-12 rounded-sm bg-dark-dim object-cover aspect-square {{
-              item()?.pictureUrl ? '' : 'p-3'
-            }}"
-            [src]="item()?.pictureUrl ?? altIconSrc()"
-            alt=""
-          />
+                itemAsTrack().pictureUrl ? '' : 'p-3'
+              }}"
+              [src]="itemAsTrack().pictureUrl ?? altIconSrc()"
+              alt=""
+            />
+          }
         }
-        <main class="flex flex-col justify-center">
+        <main class="flex flex-col justify-center w-full">
           @if (isLoading()) {
             <span
               class="h-4 w-48 rounded-sm bg-dark-dim animate-pulse mb-2"
             ></span>
-          } @else {
-            <a
-              [href]="item()?.url ?? ''"
-              class="text-sm {{
-                item()?.url
-                  ? 'hover:underline focus:underline outline-none'
-                  : 'text-light-dim pointer-events-none'
-              }}"
-              target="_blank"
-            >
-              {{ item()?.name }}
-            </a>
-          }
-
-          @if (isLoading()) {
             <span class="h-3 w-36 rounded-sm bg-dark-dim animate-pulse"></span>
           } @else {
+            @if (itemAsTrack().url) {
+              <a
+                [href]="itemAsTrack().url"
+                class="text-sm outline-none hover:underline focus:underline w-fit"
+                target="_blank"
+              >
+                {{ item().name }}
+              </a>
+            } @else {
+              <span
+                class="text-sm {{
+                  !isGenre() ? 'text-light-dim' : 'flex justify-between w-full'
+                }}"
+              >
+                {{ item().name }}
+                @if (isGenre()) {
+                  <span class="text-[0.8rem] text-light-dim pr-2">
+                    {{ itemAsGenre().artistCount }} artist{{
+                      itemAsGenre().artistCount !== 1 ? 's' : ''
+                    }}
+                  </span>
+                }
+              </span>
+            }
+
             @switch (true) {
               @case (isTrack()) {
                 <p class="text-[0.8rem] text-light-dim">
@@ -72,6 +86,16 @@ import { Component, computed, input } from '@angular/core';
                     {{ genre }}{{ separator($index, $count) }}
                   }
                 </p>
+              }
+              @case (isGenre()) {
+                <div class="mt-2 w-full h-1 rounded-sm bg-primary-dark">
+                  <div
+                    class="h-full rounded-sm bg-primary-light"
+                    [style.width]="
+                      computeWidth(itemAsGenre().artistCount) + '%'
+                    "
+                  ></div>
+                </div>
               }
               @case (isPlaylist()) {
                 <p class="text-[0.8rem] text-light-dim">
@@ -97,40 +121,39 @@ import { Component, computed, input } from '@angular/core';
   `,
 })
 export class ItemComponent {
-  readonly item = input<ItemSimple | null>(null);
+  readonly item = input.required<ItemSimple>();
   readonly index = input<number | null>(null);
   readonly isLoading = input<boolean>(false);
+  readonly altIconSrc = input.required<string>();
+  readonly maxCount = input<number>(0);
 
   readonly itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
   readonly itemAsTrack = computed(() => this.item() as TrackSimple);
   readonly itemAsArtist = computed(() => this.item() as ArtistSimple);
+  readonly itemAsGenre = computed(() => this.item() as GenreSimple);
   readonly itemAsPlaylist = computed(() => this.item() as PlaylistSimple);
 
   readonly isTrack = computed(() => this.itemAsTrack().artists !== undefined);
   readonly isArtist = computed(() => this.itemAsArtist().genres !== undefined);
+  readonly isGenre = computed(
+    () => this.itemAsGenre().artistCount !== undefined,
+  );
   readonly isPlaylist = computed(
     () => this.itemAsPlaylist().trackCount !== undefined,
   );
   readonly isUserProfile = computed(
-    () => !this.isTrack() && !this.isArtist() && !this.isPlaylist(),
+    () =>
+      !this.isTrack() &&
+      !this.isArtist() &&
+      !this.isGenre() &&
+      !this.isPlaylist(),
   );
-
-  readonly altIconSrc = computed(() => {
-    switch (true) {
-      case this.isTrack():
-        return 'svg/music-dim.svg';
-      case this.isArtist():
-        return 'svg/microphone-dim.svg';
-      case this.isPlaylist():
-        return 'svg/music-list-dim.svg';
-      case this.isUserProfile():
-        return 'svg/user-dim.svg';
-      default:
-        return '';
-    }
-  });
 
   separator(index: number, count: number) {
     return index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
+  }
+
+  computeWidth(count: number) {
+    return Math.round((count / this.maxCount()) * 100);
   }
 }

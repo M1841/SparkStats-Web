@@ -110,6 +110,11 @@ export class NavbarComponent {
       url: '/top-artists',
     },
     {
+      iconSrc: 'svg/waveform.svg',
+      name: 'Top Genres',
+      url: '/top-genres',
+    },
+    {
       iconSrc: 'svg/music-list.svg',
       name: 'Playlist Shuffler',
       url: '/shuffle',

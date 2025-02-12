@@ -13,13 +13,18 @@ import { Endpoints } from '@utils/constants';
   template: `
     <section class="flex flex-col gap-1">
       <app-section-header iconSrc="svg/bars-dim.svg" text="Now Playing" />
-      <app-item [item]="track()" [isLoading]="isLoading()" />
+      <app-item
+        [item]="track()"
+        [isLoading]="isLoading()"
+        altIconSrc="svg/music-dim.svg"
+      />
     </section>
   `,
 })
 export class CurrentlyPlayingComponent {
-  private readonly noTrack = {
+  private readonly noTrack: TrackSimple = {
     id: '',
+    url: '',
     name: 'No track is currently playing',
     artists: [],
   };
