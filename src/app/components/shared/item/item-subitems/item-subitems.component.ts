@@ -12,10 +12,10 @@ import { Component, input } from '@angular/core';
             class="hover:underline focus:underline outline-none"
             target="_blank"
           >
-            {{ text(subitem, $index, $count) }}
-          </a>
+            {{ name(subitem) }}</a
+          >{{ separator($index, $count) }}
         } @else {
-          {{ text(subitem, $index, $count) }}
+          {{ name(subitem) }}{{ separator($index, $count) }}
         }
       }
     </p>
@@ -27,13 +27,10 @@ export class ItemSubitemsComponent {
   url(subitem: Subitem): string | undefined {
     return (subitem as ArtistBase).url;
   }
-  text(subitem: Subitem, index: number, total: number) {
-    return this.name(subitem) + this.separator(index, total);
-  }
-  private name(subitem: Subitem) {
+  name(subitem: Subitem) {
     return (subitem as ArtistBase).name ?? (subitem as string);
   }
-  private separator(index: number, total: number) {
+  separator(index: number, total: number) {
     return index < total - 2 ? ',' : index === total - 2 ? ' &' : '';
   }
 }

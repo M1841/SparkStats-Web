@@ -1,6 +1,6 @@
 # SparkStats Web
 
-Started rewriting the frontend in Angular, once again, because why not
+Web-based user interface for a music statistics platform.
 
 ## Prerequisites
 
