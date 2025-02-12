@@ -1,24 +1,34 @@
 import { Component, computed, input } from '@angular/core';
 
+import { ItemIndexComponent } from './item-index/item-index.component';
+import { ItemLoadingComponent } from './item-loading/item-loading.component';
+import { ItemNameComponent } from './item-name/item-name.component';
+import { ItemBarComponent } from './item-bar/item-bar.component';
+import { ItemSubitemsComponent } from './item-subitems/item-subitems.component';
+import { ItemPlaylistDetailsComponent } from './item-playlist-details/item-playlist-details.component';
+
 @Component({
   selector: 'app-item',
-  imports: [],
+  imports: [
+    ItemIndexComponent,
+    ItemLoadingComponent,
+    ItemNameComponent,
+    ItemBarComponent,
+    ItemSubitemsComponent,
+    ItemPlaylistDetailsComponent,
+  ],
   template: `
     <li
       #itemRef
       class="flex items-center justify-between border-medium border-[1px] rounded-md p-2 -mx-2"
     >
       <section class="flex gap-2 items-center w-full min-h-12">
-        @if (index() !== null) {
-          <span class="text-[0.8rem] text-light-dim w-5 text-center">{{
-            index()! + 1
-          }}</span>
+        @if (index() !== undefined) {
+          <app-item-index [index]="index()!" />
         }
 
         @if (isLoading()) {
-          <span
-            class="h-12 w-12 aspect-square rounded-sm bg-dark-dim animate-pulse"
-          ></span>
+          <app-item-loading class="flex gap-2 items-center" />
         } @else {
           @if (!isGenre()) {
             <img
@@ -30,90 +40,38 @@ import { Component, computed, input } from '@angular/core';
               alt=""
             />
           }
-        }
-        <main class="flex flex-col justify-center w-full">
-          @if (isLoading()) {
-            <span
-              class="h-4 w-48 rounded-sm bg-dark-dim animate-pulse mb-2"
-            ></span>
-            <span class="h-3 w-36 rounded-sm bg-dark-dim animate-pulse"></span>
-          } @else {
-            @if (itemAsTrack().url) {
-              <a
-                [href]="itemAsTrack().url"
-                class="text-sm outline-none hover:underline focus:underline w-fit"
-                target="_blank"
-              >
-                {{ item().name }}
-              </a>
-            } @else {
-              <span
-                class="text-sm {{
-                  !isGenre() ? 'text-light-dim' : 'flex justify-between w-full'
-                }}"
-              >
-                {{ item().name }}
-                @if (isGenre()) {
-                  <span class="text-[0.8rem] text-light-dim pr-2">
-                    {{ itemAsGenre().artistCount }} artist{{
-                      itemAsGenre().artistCount !== 1 ? 's' : ''
-                    }}
-                  </span>
-                }
-              </span>
-            }
-
+          <main class="flex flex-col justify-center w-full">
+            <app-item-name
+              [url]="itemAsTrack().url"
+              [name]="item().name"
+              [details]="
+                isGenre()
+                  ? {
+                      amount: itemAsGenre().artistCount,
+                      measure: 'artist',
+                    }
+                  : undefined
+              "
+            />
             @switch (true) {
               @case (isTrack()) {
-                <p class="text-[0.8rem] text-light-dim">
-                  @for (artist of itemAsTrack().artists; track $index) {
-                    @if (artist.url) {
-                      <a
-                        [href]="artist.url"
-                        class="hover:underline focus:underline outline-none"
-                        target="_blank"
-                        >{{ artist.name }}</a
-                      >{{ separator($index, $count) }}
-                    } @else {
-                      {{ artist.name }}{{ separator($index, $count) }}
-                    }
-                  }
-                </p>
+                <app-item-subitems [subitems]="itemAsTrack().artists" />
               }
               @case (isArtist()) {
-                <p class="text-[0.8rem] text-light-dim">
-                  @for (genre of itemAsArtist().genres; track $index) {
-                    {{ genre }}{{ separator($index, $count) }}
-                  }
-                </p>
+                <app-item-subitems [subitems]="itemAsArtist().genres" />
               }
               @case (isGenre()) {
-                <div class="mt-2 w-full h-1 rounded-sm bg-primary-dark">
-                  <div
-                    class="h-full rounded-sm bg-primary-light"
-                    [style.width]="
-                      computeWidth(itemAsGenre().artistCount) + '%'
-                    "
-                  ></div>
-                </div>
+                <app-item-bar
+                  [maxAmount]="maxAmount()"
+                  [amount]="itemAsGenre().artistCount"
+                />
               }
               @case (isPlaylist()) {
-                <p class="text-[0.8rem] text-light-dim">
-                  <a
-                    [href]="itemAsPlaylist().owner.url"
-                    class="hover:underline focus:underline outline-none"
-                    target="_blank"
-                    >{{ itemAsPlaylist().owner.name }}</a
-                  >
-                  ·
-                  {{ itemAsPlaylist().trackCount }} track{{
-                    itemAsPlaylist().trackCount === 1 ? '' : 's'
-                  }}
-                </p>
+                <app-item-playlist-details [playlist]="itemAsPlaylist()" />
               }
             }
-          }
-        </main>
+          </main>
+        }
       </section>
 
       <ng-content select="[actions]" />
@@ -122,10 +80,10 @@ import { Component, computed, input } from '@angular/core';
 })
 export class ItemComponent {
   readonly item = input.required<ItemSimple>();
-  readonly index = input<number | null>(null);
+  readonly index = input<number>();
   readonly isLoading = input<boolean>(false);
   readonly altIconSrc = input.required<string>();
-  readonly maxCount = input<number>(0);
+  readonly maxAmount = input<number>(0);
 
   readonly itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
   readonly itemAsTrack = computed(() => this.item() as TrackSimple);
@@ -148,12 +106,4 @@ export class ItemComponent {
       !this.isGenre() &&
       !this.isPlaylist(),
   );
-
-  separator(index: number, count: number) {
-    return index < count - 2 ? ',' : index === count - 2 ? ' &' : '';
-  }
-
-  computeWidth(count: number) {
-    return Math.round((count / this.maxCount()) * 100);
-  }
 }

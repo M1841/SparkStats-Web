@@ -39,7 +39,7 @@ import { ApiService } from '@services/api.service';
                   [item]="item"
                   [isLoading]="isLoading()"
                   [altIconSrc]="sectionHeader().iconSrc"
-                  [maxCount]="maxCounts()[range]"
+                  [maxAmount]="maxAmounts()[range]"
                 />
               </ng-template>
             </app-items-list>
@@ -77,7 +77,7 @@ export class TopItemsComponent implements OnInit {
   ]);
   readonly isLoading = signal(true);
 
-  readonly maxCounts = computed(() =>
+  readonly maxAmounts = computed(() =>
     this.topItems().map((items) => {
       if (items[0] !== undefined) {
         const itemAsGenre = items[0] as GenreSimple;

@@ -5,7 +5,7 @@ import { NgTemplateOutlet } from '@angular/common';
   selector: 'app-items-list',
   imports: [NgTemplateOutlet],
   template: `
-    <ul class="flex flex-col gap-1">
+    <ul class="flex flex-col gap-2">
       @for (item of items(); track $index) {
         <ng-container
           *ngTemplateOutlet="

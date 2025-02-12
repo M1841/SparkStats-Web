@@ -28,7 +28,7 @@ import { ApiService } from '@services/api.service';
       </main>
     } @else {
       <main
-        class="flex-center flex-col gap-2"
+        class="flex-center"
         [style.height]="'calc(100vh - 20px - 2 * 0.5rem - 2 * 0.5rem - 1px)'"
       >
         <app-login-button />
