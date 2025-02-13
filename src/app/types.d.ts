@@ -63,3 +63,12 @@ type Endpoint =
   | ''
   | 'user/profile'
   | 'user/signout';
+
+interface LoadingLayout {
+  name?: true;
+  subitems?: true;
+  action?: true;
+  picture?: true;
+  amount?: true;
+  bar?: true;
+}

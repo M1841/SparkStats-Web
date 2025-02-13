@@ -4,6 +4,7 @@ import {
   inject,
   input,
   OnInit,
+  Signal,
   signal,
 } from '@angular/core';
 import { forkJoin, map, of, switchMap, tap } from 'rxjs';
@@ -40,6 +41,7 @@ import { ApiService } from '@services/api.service';
                   [isLoading]="isLoading()"
                   [altIconSrc]="sectionHeader().iconSrc"
                   [maxAmount]="maxAmounts()[range]"
+                  [layout]="layout()"
                 />
               </ng-template>
             </app-items-list>
@@ -57,6 +59,19 @@ export class TopItemsComponent implements OnInit {
   readonly endpoint = input.required<
     'track/top' | 'artist/top' | 'genre/top'
   >();
+  readonly layout: Signal<LoadingLayout> = computed(() =>
+    this.endpoint() === 'genre/top'
+      ? {
+          name: true,
+          amount: true,
+          bar: true,
+        }
+      : {
+          picture: true,
+          name: true,
+          subitems: true,
+        },
+  );
 
   private readonly api = inject(ApiService);
   private readonly fetchItems$ = of(this.ranges).pipe(

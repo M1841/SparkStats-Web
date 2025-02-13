@@ -16,6 +16,7 @@ import { Endpoints } from '@utils/constants';
       <app-item
         [item]="profile()"
         [isLoading]="isLoading()"
+        [layout]="layout"
         altIconSrc="svg/user-dim.svg"
       />
     </section>
@@ -39,4 +40,8 @@ export class UserProfileComponent {
     initialValue: this.noProfile,
   });
   readonly isLoading = signal(true);
+  readonly layout: LoadingLayout = {
+    picture: true,
+    name: true,
+  };
 }

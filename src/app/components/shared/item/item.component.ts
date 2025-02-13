@@ -28,7 +28,10 @@ import { ItemPlaylistDetailsComponent } from './item-playlist-details/item-playl
         }
 
         @if (isLoading()) {
-          <app-item-loading class="flex gap-2 items-center" />
+          <app-item-loading
+            class="flex gap-2 items-center w-full"
+            [layout]="layout()"
+          />
         } @else {
           @if (!isGenre()) {
             <img
@@ -44,10 +47,10 @@ import { ItemPlaylistDetailsComponent } from './item-playlist-details/item-playl
             <app-item-name
               [url]="itemAsTrack().url"
               [name]="item().name"
-              [details]="
+              [amount]="
                 isGenre()
                   ? {
-                      amount: itemAsGenre().artistCount,
+                      number: itemAsGenre().artistCount,
                       measure: 'artist',
                     }
                   : undefined
@@ -64,6 +67,7 @@ import { ItemPlaylistDetailsComponent } from './item-playlist-details/item-playl
                 <app-item-bar
                   [maxAmount]="maxAmount()"
                   [amount]="itemAsGenre().artistCount"
+                  class="pr-2"
                 />
               }
               @case (isPlaylist()) {
@@ -84,6 +88,11 @@ export class ItemComponent {
   readonly isLoading = input<boolean>(false);
   readonly altIconSrc = input.required<string>();
   readonly maxAmount = input<number>(0);
+  readonly layout = input<LoadingLayout>({
+    picture: true,
+    name: true,
+    subitems: true,
+  });
 
   readonly itemAsUserProfile = computed(() => this.item() as UserProfileSimple);
   readonly itemAsTrack = computed(() => this.item() as TrackSimple);

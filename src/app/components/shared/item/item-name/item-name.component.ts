@@ -15,11 +15,11 @@ import { describeQuantity } from '@utils/string.extensions';
         {{ name() }}
       </a>
     } @else {
-      <span class="text-sm flex justify-between w-full">
+      <span class="text-sm flex justify-between w-full items-center">
         {{ name() }}
-        @if (details() !== undefined) {
+        @if (amount() !== undefined) {
           <span class="text-[0.8rem] text-light-dim pr-2">
-            {{ detailsString() }}
+            {{ amountString() }}
           </span>
         }
       </span>
@@ -29,15 +29,15 @@ import { describeQuantity } from '@utils/string.extensions';
 export class ItemNameComponent {
   readonly url = input<string>();
   readonly name = input.required<string>();
-  readonly details = input<{
-    amount: number;
+  readonly amount = input<{
+    number: number;
     measure: string;
   }>();
 
-  readonly detailsString = computed(() => {
-    if (this.details() !== undefined) {
-      const { amount, measure } = this.details()!;
-      return describeQuantity(amount, measure);
+  readonly amountString = computed(() => {
+    if (this.amount() !== undefined) {
+      const { number, measure } = this.amount()!;
+      return describeQuantity(number, measure);
     }
     return '';
   });
