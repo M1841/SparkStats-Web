@@ -6,7 +6,7 @@ import { describeQuantity } from '@utils/string.extensions';
   selector: 'app-item-name',
   imports: [],
   template: `
-    @if (url() !== undefined) {
+    @if (url()) {
       <a
         [href]="url()"
         class="text-sm outline-none hover:underline focus:underline w-fit"

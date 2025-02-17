@@ -23,7 +23,7 @@ import { Component, input } from '@angular/core';
       }
       @if (layout().bar) {
         <span
-          class="h-[0.4rem] mt-[0.15rem] rounded-sm w-full bg-dark-dim animate-pulse"
+          class="h-[0.3rem] mt-[0.15rem] rounded-sm w-full bg-dark-dim animate-pulse"
         ></span>
       }
       @if (layout().action) {}

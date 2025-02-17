@@ -6,7 +6,7 @@ import { Component, input } from '@angular/core';
   template: `
     <p class="text-[0.8rem] text-light-dim">
       @for (subitem of subitems(); track $index) {
-        @if (url(subitem) !== undefined) {
+        @if (url(subitem)) {
           <a
             [href]="url(subitem)"
             class="hover:underline focus:underline outline-none"
