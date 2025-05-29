@@ -7,13 +7,14 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { LogoutButtonComponent } from '@components/shared/logout-button/logout-button.component';
 import { ApiService } from '@services/api.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [LogoutButtonComponent],
+  imports: [LogoutButtonComponent, RouterLink],
   template: `
     <nav class="sticky top-0 z-50">
       <header
@@ -24,7 +25,7 @@ import { ApiService } from '@services/api.service';
         "
       >
         <a
-          href="/"
+          [routerLink]="['/']"
           class="
             font-bold text-lg flex-center gap-1 outline-none {{
             !isAuthenticated && 'py-1'
@@ -72,7 +73,8 @@ import { ApiService } from '@services/api.service';
           <section class="p-2 flex flex-col gap-1">
             @for (item of navItems; track $index) {
               <a
-                [href]="item.url"
+                [routerLink]="[item.url]"
+                (click)="toggleMenu()"
                 class="flex p-2 items-center gap-[0.33rem] text-[0.8rem] hover:bg-dark-dim rounded-md focus:bg-dark-dim outline-none"
               >
                 <img [src]="item.iconSrc" width="16" height="16" />
