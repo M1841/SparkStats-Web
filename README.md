@@ -1,5 +1,11 @@
 # SparkStats Web
 
+> The Spotify Developer platform now requires all developers to have Premium accounts, which I don't have since I've stopped using the service
+> 
+> Due to this, and my gradual loss of interest in Spotify-related topics, ***I will no longer be maintaining this project*** and ***the live deployment will no longer be usable***
+> 
+> If you found this project useful and have a Spotify Premium account, feel free to ***create a fork and host your own version***
+
 Web-based user interface for a music statistics platform.
 
 ## Prerequisites
